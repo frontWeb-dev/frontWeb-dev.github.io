@@ -1,0 +1,500 @@
+I"m�<p>자바스크립트의 함수는 호출될 때, 매개변수로 전달되는 인자값 이외에, arguments 객체와 this를 암묵적으로 전달 받는다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">square</span><span class="p">(</span><span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="nx">number</span> <span class="o">*</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">square</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="함수-호출-방식과-this-바인딩">함수 호출 방식과 this 바인딩</h2>
+
+<p>자바스크립트의 경우 함수 호출 방식에 의해 this에 바인딩할 어떤 객체가 동적으로 결정된다.<br />
+다시 말해, 함수를 선언할 때 this에 바인딩할 객체가 정적으로 결정되는 것이 아니고, <strong>함수를 호출할 때 함수가 어떻게 호출되었는지에 따라</strong> this에 바인딩할 객체가 동적으로 결정된다.</p>
+
+<p>함수를 호출하는 방식은 아래와 같이 다양하다.</p>
+
+<ul>
+  <li>함수 호출</li>
+  <li>메서드 호출</li>
+  <li>생성자 함수 호출</li>
+  <li>apply/call/bind 호출</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="c1">// 함수 호출</span>
+<span class="nx">foo</span><span class="p">();</span> <span class="c1">// window</span>
+<span class="c1">// window.foo();</span>
+
+<span class="c1">// 메서드 호출</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span> <span class="na">foo</span><span class="p">:</span> <span class="nx">foo</span> <span class="p">};</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span> <span class="c1">// obj</span>
+
+<span class="c1">// 생성자 함수 호출</span>
+<span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">foo</span><span class="p">();</span> <span class="c1">// instance</span>
+
+<span class="c1">// apply/call/bind 호출</span>
+<span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bar</span><span class="dl">'</span> <span class="p">};</span>
+<span class="nx">foo</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">bar</span><span class="p">);</span> <span class="c1">// bar</span>
+<span class="nx">foo</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">bar</span><span class="p">);</span> <span class="c1">// bar</span>
+<span class="nx">foo</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">bar</span><span class="p">);</span> <span class="c1">// bar</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="함수-호출">함수 호출</h2>
+
+<p>전역객체는 모든 객체의 유일한 최상위 객체를 의미하며 일반적으로 Browser-side에서는 window, Server-side(Node.js)에서는 global 객체를 의미한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in browser console</span>
+<span class="k">this</span> <span class="o">===</span> <span class="nb">window</span><span class="p">;</span> <span class="c1">// true</span>
+
+<span class="c1">// in Terminal</span>
+<span class="k">this</span> <span class="o">===</span> <span class="nb">global</span><span class="p">;</span> <span class="c1">// true</span>
+</code></pre></div></div>
+
+<p>전역객체는 전역 스코프를 갖는 전역변수를 프로퍼티로 소유한다.<br />
+글로벌 영역에 선언한 함수는 전역객체의 프로퍼티로 접근할 수 있는 전역 변수의 메서드이다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">ga</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Global variable</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">ga</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">ga</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">invoked!</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>기본적으로 this는 전역객체에 바인딩된다.<br />
+전역함수는 물론이고 심지어 내부함수의 경우도 this는 외부함수가 아닌 전역객체에 바인딩된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// window</span>
+
+  <span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// window</span>
+  <span class="p">}</span>
+
+  <span class="nx">bar</span><span class="p">();</span>
+
+<span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>또한 메서드의 내부함수 일 경우에도 this는 전역객체에 바인딩된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="na">foo</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// obj</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+
+    <span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// window</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 1</span>
+    <span class="p">}</span>
+    <span class="nx">bar</span><span class="p">();</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>콜백함수의 경우에도 this는 전역객체에 바인딩된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="na">foo</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">callback's this: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">callback's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+<span class="c1">// callback's this : window</span>
+<span class="c1">// callback's this.value : 1</span>
+</code></pre></div></div>
+
+<p><strong>내부함수는 일반 함수, 메서드, 콜백함수 어디에서 선언되었든 관계없이 this는 전역객체를 바인딩한다.</strong><br />
+내부함수의 this가 전역객체를 참조하는 것을 막는 방법은 아래와 같다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="na">foo</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span> <span class="c1">// Workaround : this === obj</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// obj</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+
+    <span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// window</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this.value:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 1</span>
+
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's that: </span><span class="dl">"</span><span class="p">,</span> <span class="nx">that</span><span class="p">);</span> <span class="c1">// obj</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's that.value: </span><span class="dl">"</span><span class="p">,</span> <span class="nx">that</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+    <span class="p">}</span>
+    <span class="nx">bar</span><span class="p">();</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p align="center"><img src="https://poiemaweb.com/img/Function_Invocation_Pattern.png" width="60%" /></p>
+
+<p>위 방법 이외에도 자바스크립트는 this를 명시적으로 바인딩할 수 있는 apply, call, bind를 제공한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="na">foo</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// obj</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+
+    <span class="kd">function</span> <span class="nx">bar</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// obj</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this.value:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's argument:</span><span class="dl">"</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">bar</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]);</span>
+    <span class="nx">bar</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="nx">bar</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">obj</span><span class="p">)(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="메서드-호출">메서드 호출</h2>
+
+<p>함수가 객체의 프로퍼티 값이면 메서드로서 호출된다.<br />
+이때 메서드 내부의 this는 해당 메서드를 소유한 객체, 즉 해당 메서드를 호출한 객체에 바인딩된다.</p>
+
+<p align="center"><img src="https://poiemaweb.com/img/Method_Invocation_Pattern.png" width="60%" /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Kim</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">sayName</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="nx">obj2</span><span class="p">.</span><span class="nx">sayName</span> <span class="o">=</span> <span class="nx">obj1</span><span class="p">.</span><span class="nx">sayName</span><span class="p">;</span>
+
+<span class="nx">obj1</span><span class="p">.</span><span class="nx">sayName</span><span class="p">();</span> <span class="c1">// Kim</span>
+<span class="nx">obj2</span><span class="p">.</span><span class="nx">sayName</span><span class="p">();</span> <span class="c1">// Lee</span>
+</code></pre></div></div>
+
+<p>프로토타입 객체도 메서드를 가질 수 있다. 프로토타입 객체 메서드 내부에서 사용된 this도 일반 메서드 방식과 마찬가지로 해당 메서드를 호출한 객체에 바인딩된다.</p>
+
+<p align="center"><img src="https://poiemaweb.com/img/prototype_metthod_invocation_pattern.png" width="80%" /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getName</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">me</span><span class="p">.</span><span class="nx">getName</span><span class="p">());</span> <span class="c1">// lee</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Kim</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getName</span><span class="p">());</span> <span class="c1">// Kim</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="생성자-함수-호출">생성자 함수 호출</h2>
+
+<p>자바스크립트의 생성자 함수는 말 그대로 객체를 생성하는 역할을 한다. 기존 함수에 new 연산자를 붙여서 호출하면 해당 함수는 생성자 함수로 동작한다.</p>
+
+<p>이는 반대로 생각하면 생성자 함수가 아닌 일반 함수에 new 연산자를 붙여 호출하면 생성자 함수처럼 동작할 수 있다.<br />
+따라서 일반적으로 생성자 함수명은 첫문자를 대문자로 기술하여 혼란을 방지하기 위한 노력을 한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 생성자 함수</span>
+<span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">me</span><span class="p">);</span> <span class="c1">// Person {name: 'Lee'}</span>
+
+<span class="c1">// new 연산자와 함께 생성자 함수를 호출하지 않으면 생성자 함수로 동작하지 않는다.</span>
+<span class="kd">var</span> <span class="nx">you</span> <span class="o">=</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Kim</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">you</span><span class="p">);</span> <span class="c1">// undefined</span>
+</code></pre></div></div>
+
+<p>new 연산자와 함께 생성자 함수를 호출하면 this 바인딩이 메서드나 함수를 호출할 때와는 다르게 동작한다.</p>
+
+<hr />
+
+<h3 id="생성자-함수-동작-방식">생성자 함수 동작 방식</h3>
+
+<p>new 연산자와 함께 생성자 함수를 호출하면 다음과 같은 수순으로 동작한다.</p>
+
+<ol>
+  <li>
+    <p><strong>빈 객체 생성 및 this 바인딩</strong></p>
+
+    <p>생성자 함수의 코드가 실행되기 전 빈 객체가 생성된다. 이 빈 객체가 생성자 함수가 새로 생성하는 객체이다.
+이후 생성자 함수 내에서 사용되는 this는 이 빈 객체를 가리킨다.<br />
+ 그리고 생성된 빈 객체는 함수의 prototype 프로퍼티가 가리키는 객체를 자신의 프로토타입 객체로 설정한다.</p>
+  </li>
+  <li>
+    <p><strong>this를 통한 프로퍼티 생성</strong></p>
+
+    <p>생성된 빈 객체에 this를 사용하여 동적으로 프로퍼티나 메서드를 생성할 수 있다. this는 새로 생성된 객체를 가리키므로 this를 통해 생성한 프로퍼티와 메서드는 새로 생성된 객체에 추가된다.</p>
+  </li>
+  <li>
+    <p><strong>생성된 객체 반환</strong></p>
+
+    <p>반환문이 없는 경우, this에 바인딩된 새로 생성한 객체가 반환된다. 명시적으로 this를 반환하여도 결과는 같다.<br />
+반환문이 this가 아닌 다른 객체를 명시적으로 반환하는 경우, this가 아닌 해당 객체가 반환된다. 이 때 this를 반환하지 않은 함수는 생성자 함수로서의 역할을 수행하지 못한다. 따라서 생성자 함수는 반환문을 명시적으로 사용하지 않는다.</p>
+  </li>
+</ol>
+
+<p align="center"><img src="https://poiemaweb.com/img/constructor.png" width="70%" /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// 생성자 함수 코드 실행 전 ---------- 1</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span> <span class="c1">// --------------- 2</span>
+  <span class="c1">// 생성자 함수 반환 ----------------- 3</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">me</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span> <span class="c1">// Lee</span>
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="객체-리터럴-방식과-생성자-함수-방식의-차이">객체 리터럴 방식과 생성자 함수 방식의 차이</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 객체 리터럴 방식</span>
+<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">foo</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">female</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// Object</span>
+
+<span class="c1">// 생성자 함수 방식</span>
+<span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">gender</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">gender</span> <span class="o">=</span> <span class="nx">gender</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">female</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">me</span><span class="p">);</span> <span class="c1">// Person</span>
+
+<span class="kd">var</span> <span class="nx">you</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Kim</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">male</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">you</span><span class="p">);</span> <span class="c1">// Person</span>
+</code></pre></div></div>
+
+<p>객체 리터러 방식과 생성자 함수 방식의 차이는 **프로토타입 객체([[prototype]])에 있다.</p>
+
+<ul>
+  <li>객체 리터럴 방식 - 생성된 객체의 프로토타입 객체 : Object.prototype</li>
+  <li>생성자 함수 방식 - 생성된 객체의 프로토타입 객치 : Person.prototype</li>
+</ul>
+
+<h3 id="생성자-함수에-new-연산자를-붙이지-않고-호출할-경우">생성자 함수에 new 연산자를 붙이지 않고 호출할 경우</h3>
+
+<p><strong>일반함수와 생성자 함수에 특별한 형식의 차이는 없으며 함수에 new 연산자를 붙여서 호출하면 해당 함수는 생성자 함수로 동작한다.</strong></p>
+
+<p>그러나 객체 생성 목적으로 작성한 생성자 함수를 new 없이 호출하거나 일반함수에 new를 붙여서 호출하면 오류가 발생할 수 있다. 일반함수와 생성자 함수의 호출 시 this 바인딩 방식이 다르기 때문이다.</p>
+
+<p>일반 함수를 호출하면 this는 전역객체에 바인딩되지만, new 연산자와 함께 생성자 함수를 호출하면 this는 생성자 함수가 암묵적으로 생성한 빈 객체에 바인딩된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// new 없이 호출하는 경우, 전역 객체에 name 프로퍼티 추가</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 일반 함수로서 호출되었기 때문에 객체를 암묵적으로 생성하여 반환하지 않는다.</span>
+<span class="c1">// 일반 함수의 this는 전역 객체를 가리킨다.</span>
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">me</span><span class="p">);</span> <span class="c1">// undefined</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">me</span><span class="p">);</span> <span class="c1">// Lee</span>
+</code></pre></div></div>
+
+<p>생성자 함수를 new 없이 호출하는 경우, 함수 Person 내부의 this는 전역객체를 가리키므로 name은 전역변수(window)에 바인딩된다. 또한 new와 함께 생성자 함수를 호출하는 경우 암묵적으로 반환하던 this도 반환하지 않으며, 반환문이 없으므로 undefined를 반환하게 된다.</p>
+
+<p>일반함수와 생성자 함수에 특별한 형식적 차이는 없기 때문에 일반적으로 생성한 함수명은 첫문자를 대문자로 기술하여 혼란을 방지하려고 노력한다. 그러나 이러한 규칙을 사용한다 하더라도 실수는 발행할 수 있다.</p>
+
+<p>이러한 위험성을 회피하기 위해 사용되는 패턴(Scope-Safe Constructor)은 다음과 같다. 이 패턴은 대부분의 라이브러리에서 광범위하게 사용된다.</p>
+
+<p>참고로 대부분의 빌트인 생성자(Object, Regex, Array 등)는 new 연산자와 함께 호출되었는지를 확인한 후 적절한 값을 반환한다.</p>
+
+<p>다시 말하지만 new 연산자와 함께 생성자 함수를 호출하는 경우, 생성자 함수 내부의 this는 생성자 함수에 의해 생성된 인스턴스를 가리킨다. 따라서 아래 A 함수가 new 연산자와 함께 생성자 함수로써 호출되면 <strong>A 함수 내부의 this는 A 생성자 함수에 의해 생성된 인스턴스를 가리킨다.</strong></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Scope-Safe Constructor Pattern</span>
+<span class="kd">function</span> <span class="nx">A</span><span class="p">(</span><span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/*
+    생성자 함수가 new 연산자와 함께 호출되면 함수의 선두에서 빈 객체를 생성하고 this에 바인딩한다
+
+    this가 호출된 함수(arguments.callee, 본 예제의 경우 A)의 인스턴스가 아니면 new 연산자를 사용하지 않는 것이므로
+    이 경우의 new와 함께 생성자 함수를 호출하여 인스턴스를 반환한다.
+
+    arguments.callee는 호출된 함수의 이름을 나타낸다.
+    이 예제의 경우 A로 표기하여도 문제없이 동작하지만, 특정함수의 이름과 의존성을 없애기 위해서 arguments.callee를 사용하는 것이 좋다.
+  */</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">(</span><span class="nx">arg</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// 프로퍼티 생성과 값의 할당</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">arg</span> <span class="p">?</span> <span class="nx">arg</span> <span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">A</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">A</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 10</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>callee는 arguments 객체의 프로퍼티로서 함수 바디 내에서 현재 실행 중인 함수를 참조할 때 사용한다.<br />
+다시 말해, 함수 바디 내에서 현재 실행 중인 함수를 반환한다.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="applaycallbind-호출">applay/call/bind 호출</h2>
+
+<p>this에 바인딩될 객체는 함수 호출 패턴에 의해 결정된다. 이는 자바스크립트 엔진이 수행하는 것이다. 이러한 자바스크립트 엔진의 암묵적 this 바인딩 이외에 this를 특정 객체에 명시적으로 바인딩하는 방법도 제공된다.<br />
+이것을 가능하는 것이 Function.prototype.apply, Function.prototype.call 메서드이다.</p>
+
+<p>이 메서드들은 모든 함수 객체의 프로토타입 객체인 Function.prototype 객체의 메서드이다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">func</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">,</span> <span class="p">[</span><span class="nx">argsArray</span><span class="p">]);</span>
+
+<span class="c1">// thisArg : 함수 내부의 this에 바인딩할 객체</span>
+<span class="c1">// argsArray : 함수에 전달할 arguments의 배열</span>
+</code></pre></div></div>
+
+<p>기억해야 할 것은 apply() 메서드를 호출하는 주체는 함수이며 <strong>apply() 메서드는 this를 특정 객체에 바인딩할 뿐, 본질적인 기능은 함수 호출이라는 것이다.</strong></p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="p">{};</span>
+
+<span class="c1">// apply 메서드는 생성자 함수 Person을 호출한다. 이 때 this에 객체 foo를 바인딩한다.</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">foo</span><span class="p">,</span> <span class="p">[</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">]);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// {name: 'name'}</span>
+</code></pre></div></div>
+
+<p>빈 객체 foo를 apply() 메서드의 첫 번째 매개변수에, argument의 배열을 두 번째 매개변수에 전달하면서 Person 함수를 호출하였다.<br />
+이 때 Person 함수의 this는 foo 객체가 된다. Person 함수는 this의 name 프로퍼티에 매개변수 name에 할당된 인수를 할당하는데 this에 바인딩된 foo 객체에는 name 프로퍼티가 없으므로 name 프로퍼티가 동적 추가되고 값이 할당된다.</p>
+
+<p>apply() 메서드의 대표적인 용도는 arguments 객체와 같은 유사 배열 객체에 배열 메서드를 사용하는 경우이다. arguments 객체는 배열이 아니기 때문에 slice() 같은 배열의 메서드를 사용할 수 없으나 apply() 메서드를 이용하면 가능하다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">convertArgsToArray</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span> <span class="c1">// Arguments(3)</span>
+
+  <span class="c1">// arguments 객체를 배열로 변환</span>
+  <span class="c1">// slice : 배열의 특정 부분에 대한 복사본 생성</span>
+  <span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span> <span class="c1">// arguments.slice</span>
+
+  <span class="c1">// var arr = [].slice.apply(arguments);</span>
+
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arr</span><span class="p">);</span> <span class="c1">// [1, 2, 3]</span>
+  <span class="k">return</span> <span class="nx">arr</span><span class="p">;</span> <span class="c1">// [1, 2, 3]</span>
+<span class="p">}</span>
+
+<span class="nx">convertArgsToArray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Array.prototype.slice.apply(arguments)는 “Array.prototype.slice()메서드를 호출하라. 단, this는 arguments 객체로 바인딩하라”는 의미가 된다.<br />
+결국 Array.prototype.slice() 메서드를 arguments 객체 자신의 메서드인 것처럼 arguments.slice()와 같은 형태로 호출하라는 것이다.</p>
+
+<p align="center"><img src="https://poiemaweb.com/img/apply.png" width="70%" /></p>
+
+<p>call() 메서드는 apply()와 기능은 같지만 apply()의 두 번째 인자에서 배열 형태로 넘긴 것을 각각 하나의 인자로 넘긴다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Person</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">foo</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]);</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">foo</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>apply()와 call() 메서드는 콜백 함수의 this를 위해서 사용되기도 한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">doSomething</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">callback</span> <span class="o">==</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// --------- 1</span>
+    <span class="nx">callback</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span> <span class="c1">// --------- 2</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// undefined</span>
+</code></pre></div></div>
+
+<p>1의 시점에서 this는 Person 객체이다. 그러나 2의 시점에서 this는 전역객체 window를 가리킨다.<br />
+콜백함수를 호출하는 외부 함수 내부의 this와 콜백함수 내부의 this가 상이하기 때문에 문맥상 문제가 발생한다.</p>
+
+<p>따라서 콜백함수를 호출하는 함수 내부의 this와 일치시켜 주어야 하는 번거로움이 발생한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">doSomething</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">callback</span> <span class="o">==</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// 'Lee'</span>
+</code></pre></div></div>
+
+<p>ES5에 추가된 Function.prototype.bind를 사용하는 방법도 가능하다.<br />
+Function.prototype.bind는 함수에 인자로 전달한 this가 바인딩된 새로운 함수를 리턴한다.</p>
+
+<hr />
+
+<p><a href="https://poiemaweb.com/js-this">출처 : poiemaweb - 함수 호출 방식에 의해 결정되는 this</a></p>
+:ET

@@ -1,0 +1,112 @@
+I"1<p>css padding 속성은 정의된 테두리 내부의 요소 콘텐츠 주위에 공간을 생성하는 데 사용한다.<br />
+css를 사용하면 padding을 완전히 제어할 수 있다. 요소의 각 측면(위, 오른쪽, 아래, 왼쪽)에 대한 padding을 설정하는 속성이 있다.</p>
+
+<hr />
+
+<h2 id="padding-individual-sides">Padding Individual Sides</h2>
+
+<p>css에는 요소의 각 측면에 대한 padding을 지정하기 위한 속성이 있다.</p>
+
+<ul>
+  <li>padding-top</li>
+  <li>padding-right</li>
+  <li>padding-bottom</li>
+  <li>padding-left</li>
+</ul>
+
+<p>모든 padding 속성은 아래의 값을 가질 수 있다.</p>
+
+<ul>
+  <li>length - px, pt, cm 등으로 padding을 지정한다.</li>
+  <li>% - 포함하는 요소 너비의 %로 padding을 지정한다.</li>
+  <li>
+    <p>inherit - padding이 부모 요소에서 상속되어야 함을 지정한다.</p>
+  </li>
+  <li>음수 값은 허용되지 않는다.</li>
+</ul>
+
+<hr />
+
+<h2 id="padding---shorthand-property">Padding - Shorthand Property</h2>
+
+<p>코드를 줄이기 위해 하나의 속성에 대한 모든 padding 속성을 지정할 수 있다.</p>
+
+<p>padding 속성에 4개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span> <span class="m">50px</span> <span class="m">75px</span> <span class="m">100px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상단 패딩 25px</li>
+  <li>오른쪽 패딩 50px</li>
+  <li>하단 패딩 75px</li>
+  <li>왼쪽 패딩 100px</li>
+</ul>
+
+<p>padding 속성에 3개의 값이 있는 경우:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span> <span class="m">50px</span> <span class="m">75px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상단 패딩 25px</li>
+  <li>오른쪽 및 왼쪽 패딩 50px</li>
+  <li>하단 패딩 75px</li>
+</ul>
+
+<p>padding 속성에 2개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span> <span class="m">50px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상단 및 하단 패딩 25px</li>
+  <li>오른쪽 및 왼쪽 패딩 50px</li>
+</ul>
+
+<p>padding 속성에 1개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>4개의 패딩 모두 25px</li>
+</ul>
+
+<hr />
+
+<h2 id="padding-and-element-width">Padding and Element Width</h2>
+
+<p>css width 속성은 요소의 콘텐츠 영역 너비를 지정한다. 콘텐츠 영역은 요소의 패딩, 테두리 및 여백 내부의 부분이다.<br />
+따라서 요소에 지정된 너비가 있는 경우, 해당 요소에 추가된 패딩이 요소의 전체 너비에 추가된다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>위 예시에서 div 요소의 너비는 300px이다.<br />
+그러나 div 요소의 실제 너비는 350px(300px + 왼쪽 패딩 25px + 오른쪽 패딩 25px)이다.</p>
+
+<p>패딩의 양에 관계없이 너비를 300px로 유지하려면 box-sizing 속성을 사용해야 한다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+  <span class="nl">box-sizing</span><span class="p">:</span> <span class="n">border-box</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a href="https://www.w3schools.com/css/css_padding.asp">출처 : W3S - CSS padding</a></p>
+:ET

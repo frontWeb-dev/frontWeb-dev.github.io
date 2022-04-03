@@ -1,0 +1,2048 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="http://localhost:4000/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/blog/" rel="alternate" type="text/html" /><updated>2022-02-20T18:45:04+09:00</updated><id>http://localhost:4000/blog/feed.xml</id><title type="html">Heimish_dev</title><subtitle></subtitle><author><name>Park jiho</name></author><entry><title type="html">this 용법</title><link href="http://localhost:4000/blog/javascript/this/" rel="alternate" type="text/html" title="this 용법" /><published>2022-02-19T00:00:00+09:00</published><updated>2022-02-19T00:00:00+09:00</updated><id>http://localhost:4000/blog/javascript/this</id><content type="html" xml:base="http://localhost:4000/blog/javascript/this/"><![CDATA[<p>자바스크립트의 함수는 호출될 때, 매개변수로 전달되는 인자값 이외에, arguments 객체와 this를 암묵적으로 전달 받는다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">square</span><span class="p">(</span><span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="nx">number</span> <span class="o">*</span> <span class="nx">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">square</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="함수-호출-방식과-this-바인딩">함수 호출 방식과 this 바인딩</h2>
+
+<p>자바스크립트의 경우 함수 호출 방식에 의해 this에 바인딩할 어떤 객체가 동적으로 결정된다.<br />
+다시 말해, 함수를 선언할 때 this에 바인딩할 객체가 정적으로 결정되는 것이 아니고, <strong>함수를 호출할 때 함수가 어떻게 호출되었는지에 따라</strong> this에 바인딩할 객체가 동적으로 결정된다.</p>
+
+<p>함수를 호출하는 방식은 아래와 같이 다양하다.</p>
+
+<ul>
+  <li>함수 호출</li>
+  <li>메서드 호출</li>
+  <li>생성자 함수 호출</li>
+  <li>apply/call/bind 호출</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="c1">// 함수 호출</span>
+<span class="nx">foo</span><span class="p">();</span> <span class="c1">// window</span>
+<span class="c1">// window.foo();</span>
+
+<span class="c1">// 메서드 호출</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span> <span class="na">foo</span><span class="p">:</span> <span class="nx">foo</span> <span class="p">};</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span> <span class="c1">// obj</span>
+
+<span class="c1">// 생성자 함수 호출</span>
+<span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">foo</span><span class="p">();</span> <span class="c1">// instance</span>
+
+<span class="c1">// apply/call/bind 호출</span>
+<span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bar</span><span class="dl">'</span> <span class="p">};</span>
+<span class="nx">foo</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">bar</span><span class="p">);</span> <span class="c1">// bar</span>
+<span class="nx">foo</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">bar</span><span class="p">);</span> <span class="c1">// bar</span>
+<span class="nx">foo</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">bar</span><span class="p">);</span> <span class="c1">// bar</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="함수-호출">함수 호출</h2>
+
+<p>전역객체는 모든 객체의 유일한 최상위 객체를 의미하며 일반적으로 Browser-side에서는 window, Server-side(Node.js)에서는 global 객체를 의미한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in browser console</span>
+<span class="k">this</span> <span class="o">===</span> <span class="nb">window</span><span class="p">;</span> <span class="c1">// true</span>
+
+<span class="c1">// in Terminal</span>
+<span class="k">this</span> <span class="o">===</span> <span class="nb">global</span><span class="p">;</span> <span class="c1">// true</span>
+</code></pre></div></div>
+
+<p>전역객체는 전역 스코프를 갖는 전역변수를 프로퍼티로 소유한다.<br />
+글로벌 영역에 선언한 함수는 전역객체의 프로퍼티로 접근할 수 있는 전역 변수의 메서드이다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">ga</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Global variable</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">ga</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">ga</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">invoked!</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>기본적으로 this는 전역객체에 바인딩된다.<br />
+전역함수는 물론이고 심지어 내부함수의 경우도 this는 외부함수가 아닌 전역객체에 바인딩된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// window</span>
+
+  <span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// window</span>
+  <span class="p">}</span>
+
+  <span class="nx">bar</span><span class="p">();</span>
+
+<span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>또한 메서드의 내부함수 일 경우에도 this는 전역객체에 바인딩된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="na">foo</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// obj</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+
+    <span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// window</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 1</span>
+    <span class="p">}</span>
+    <span class="nx">bar</span><span class="p">();</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>콜백함수의 경우에도 this는 전역객체에 바인딩된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="na">foo</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">callback's this: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">callback's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+<span class="c1">// callback's this : window</span>
+<span class="c1">// callback's this.value : 1</span>
+</code></pre></div></div>
+
+<p><strong>내부함수는 일반 함수, 메서드, 콜백함수 어디에서 선언되었든 관계없이 this는 전역객체를 바인딩한다.</strong><br />
+내부함수의 this가 전역객체를 참조하는 것을 막는 방법은 아래와 같다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="na">foo</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span> <span class="c1">// Workaround : this === obj</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// obj</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+
+    <span class="kd">function</span> <span class="nx">bar</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// window</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this.value:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 1</span>
+
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's that: </span><span class="dl">"</span><span class="p">,</span> <span class="nx">that</span><span class="p">);</span> <span class="c1">// obj</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's that.value: </span><span class="dl">"</span><span class="p">,</span> <span class="nx">that</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+    <span class="p">}</span>
+    <span class="nx">bar</span><span class="p">();</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p align="center"><img src="https://poiemaweb.com/img/Function_Invocation_Pattern.png" width="60%" /></p>
+
+<p>위 방법 이외에도 자바스크립트는 this를 명시적으로 바인딩할 수 있는 apply, call, bind를 제공한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="na">foo</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// obj</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">foo's this.value: </span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+
+    <span class="kd">function</span> <span class="nx">bar</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span> <span class="c1">// obj</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's this.value:</span><span class="dl">"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bar's argument:</span><span class="dl">"</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">bar</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]);</span>
+    <span class="nx">bar</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="nx">bar</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">obj</span><span class="p">)(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">();</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="메서드-호출">메서드 호출</h2>
+
+<p>함수가 객체의 프로퍼티 값이면 메서드로서 호출된다.<br />
+이때 메서드 내부의 this는 해당 메서드를 소유한 객체, 즉 해당 메서드를 호출한 객체에 바인딩된다.</p>
+
+<p align="center"><img src="https://poiemaweb.com/img/Method_Invocation_Pattern.png" width="60%" /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">obj1</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Kim</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">sayName</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">obj2</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="nx">obj2</span><span class="p">.</span><span class="nx">sayName</span> <span class="o">=</span> <span class="nx">obj1</span><span class="p">.</span><span class="nx">sayName</span><span class="p">;</span>
+
+<span class="nx">obj1</span><span class="p">.</span><span class="nx">sayName</span><span class="p">();</span> <span class="c1">// Kim</span>
+<span class="nx">obj2</span><span class="p">.</span><span class="nx">sayName</span><span class="p">();</span> <span class="c1">// Lee</span>
+</code></pre></div></div>
+
+<p>프로토타입 객체도 메서드를 가질 수 있다. 프로토타입 객체 메서드 내부에서 사용된 this도 일반 메서드 방식과 마찬가지로 해당 메서드를 호출한 객체에 바인딩된다.</p>
+
+<p align="center"><img src="https://poiemaweb.com/img/prototype_metthod_invocation_pattern.png" width="80%" /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getName</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">me</span><span class="p">.</span><span class="nx">getName</span><span class="p">());</span> <span class="c1">// lee</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Kim</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getName</span><span class="p">());</span> <span class="c1">// Kim</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="생성자-함수-호출">생성자 함수 호출</h2>
+
+<p>자바스크립트의 생성자 함수는 말 그대로 객체를 생성하는 역할을 한다. 기존 함수에 new 연산자를 붙여서 호출하면 해당 함수는 생성자 함수로 동작한다.</p>
+
+<p>이는 반대로 생각하면 생성자 함수가 아닌 일반 함수에 new 연산자를 붙여 호출하면 생성자 함수처럼 동작할 수 있다.<br />
+따라서 일반적으로 생성자 함수명은 첫문자를 대문자로 기술하여 혼란을 방지하기 위한 노력을 한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 생성자 함수</span>
+<span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">me</span><span class="p">);</span> <span class="c1">// Person {name: 'Lee'}</span>
+
+<span class="c1">// new 연산자와 함께 생성자 함수를 호출하지 않으면 생성자 함수로 동작하지 않는다.</span>
+<span class="kd">var</span> <span class="nx">you</span> <span class="o">=</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Kim</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">you</span><span class="p">);</span> <span class="c1">// undefined</span>
+</code></pre></div></div>
+
+<p>new 연산자와 함께 생성자 함수를 호출하면 this 바인딩이 메서드나 함수를 호출할 때와는 다르게 동작한다.</p>
+
+<hr />
+
+<h3 id="생성자-함수-동작-방식">생성자 함수 동작 방식</h3>
+
+<p>new 연산자와 함께 생성자 함수를 호출하면 다음과 같은 수순으로 동작한다.</p>
+
+<ol>
+  <li>
+    <p><strong>빈 객체 생성 및 this 바인딩</strong></p>
+
+    <p>생성자 함수의 코드가 실행되기 전 빈 객체가 생성된다. 이 빈 객체가 생성자 함수가 새로 생성하는 객체이다.
+이후 생성자 함수 내에서 사용되는 this는 이 빈 객체를 가리킨다.<br />
+ 그리고 생성된 빈 객체는 함수의 prototype 프로퍼티가 가리키는 객체를 자신의 프로토타입 객체로 설정한다.</p>
+  </li>
+  <li>
+    <p><strong>this를 통한 프로퍼티 생성</strong></p>
+
+    <p>생성된 빈 객체에 this를 사용하여 동적으로 프로퍼티나 메서드를 생성할 수 있다. this는 새로 생성된 객체를 가리키므로 this를 통해 생성한 프로퍼티와 메서드는 새로 생성된 객체에 추가된다.</p>
+  </li>
+  <li>
+    <p><strong>생성된 객체 반환</strong></p>
+
+    <p>반환문이 없는 경우, this에 바인딩된 새로 생성한 객체가 반환된다. 명시적으로 this를 반환하여도 결과는 같다.<br />
+반환문이 this가 아닌 다른 객체를 명시적으로 반환하는 경우, this가 아닌 해당 객체가 반환된다. 이 때 this를 반환하지 않은 함수는 생성자 함수로서의 역할을 수행하지 못한다. 따라서 생성자 함수는 반환문을 명시적으로 사용하지 않는다.</p>
+  </li>
+</ol>
+
+<p align="center"><img src="https://poiemaweb.com/img/constructor.png" width="70%" /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// 생성자 함수 코드 실행 전 ---------- 1</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span> <span class="c1">// --------------- 2</span>
+  <span class="c1">// 생성자 함수 반환 ----------------- 3</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">me</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span> <span class="c1">// Lee</span>
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="객체-리터럴-방식과-생성자-함수-방식의-차이">객체 리터럴 방식과 생성자 함수 방식의 차이</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 객체 리터럴 방식</span>
+<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">foo</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">female</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// Object</span>
+
+<span class="c1">// 생성자 함수 방식</span>
+<span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">gender</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">gender</span> <span class="o">=</span> <span class="nx">gender</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">female</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">me</span><span class="p">);</span> <span class="c1">// Person</span>
+
+<span class="kd">var</span> <span class="nx">you</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Kim</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">male</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">you</span><span class="p">);</span> <span class="c1">// Person</span>
+</code></pre></div></div>
+
+<p>객체 리터러 방식과 생성자 함수 방식의 차이는 **프로토타입 객체([[prototype]])에 있다.</p>
+
+<ul>
+  <li>객체 리터럴 방식 - 생성된 객체의 프로토타입 객체 : Object.prototype</li>
+  <li>생성자 함수 방식 - 생성된 객체의 프로토타입 객치 : Person.prototype</li>
+</ul>
+
+<h3 id="생성자-함수에-new-연산자를-붙이지-않고-호출할-경우">생성자 함수에 new 연산자를 붙이지 않고 호출할 경우</h3>
+
+<p><strong>일반함수와 생성자 함수에 특별한 형식의 차이는 없으며 함수에 new 연산자를 붙여서 호출하면 해당 함수는 생성자 함수로 동작한다.</strong></p>
+
+<p>그러나 객체 생성 목적으로 작성한 생성자 함수를 new 없이 호출하거나 일반함수에 new를 붙여서 호출하면 오류가 발생할 수 있다. 일반함수와 생성자 함수의 호출 시 this 바인딩 방식이 다르기 때문이다.</p>
+
+<p>일반 함수를 호출하면 this는 전역객체에 바인딩되지만, new 연산자와 함께 생성자 함수를 호출하면 this는 생성자 함수가 암묵적으로 생성한 빈 객체에 바인딩된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// new 없이 호출하는 경우, 전역 객체에 name 프로퍼티 추가</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 일반 함수로서 호출되었기 때문에 객체를 암묵적으로 생성하여 반환하지 않는다.</span>
+<span class="c1">// 일반 함수의 this는 전역 객체를 가리킨다.</span>
+<span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">me</span><span class="p">);</span> <span class="c1">// undefined</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">me</span><span class="p">);</span> <span class="c1">// Lee</span>
+</code></pre></div></div>
+
+<p>생성자 함수를 new 없이 호출하는 경우, 함수 Person 내부의 this는 전역객체를 가리키므로 name은 전역변수(window)에 바인딩된다. 또한 new와 함께 생성자 함수를 호출하는 경우 암묵적으로 반환하던 this도 반환하지 않으며, 반환문이 없으므로 undefined를 반환하게 된다.</p>
+
+<p>일반함수와 생성자 함수에 특별한 형식적 차이는 없기 때문에 일반적으로 생성한 함수명은 첫문자를 대문자로 기술하여 혼란을 방지하려고 노력한다. 그러나 이러한 규칙을 사용한다 하더라도 실수는 발행할 수 있다.</p>
+
+<p>이러한 위험성을 회피하기 위해 사용되는 패턴(Scope-Safe Constructor)은 다음과 같다. 이 패턴은 대부분의 라이브러리에서 광범위하게 사용된다.</p>
+
+<p>참고로 대부분의 빌트인 생성자(Object, Regex, Array 등)는 new 연산자와 함께 호출되었는지를 확인한 후 적절한 값을 반환한다.</p>
+
+<p>다시 말하지만 new 연산자와 함께 생성자 함수를 호출하는 경우, 생성자 함수 내부의 this는 생성자 함수에 의해 생성된 인스턴스를 가리킨다. 따라서 아래 A 함수가 new 연산자와 함께 생성자 함수로써 호출되면 <strong>A 함수 내부의 this는 A 생성자 함수에 의해 생성된 인스턴스를 가리킨다.</strong></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Scope-Safe Constructor Pattern</span>
+<span class="kd">function</span> <span class="nx">A</span><span class="p">(</span><span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/*
+    생성자 함수가 new 연산자와 함께 호출되면 함수의 선두에서 빈 객체를 생성하고 this에 바인딩한다
+
+    this가 호출된 함수(arguments.callee, 본 예제의 경우 A)의 인스턴스가 아니면 new 연산자를 사용하지 않는 것이므로
+    이 경우의 new와 함께 생성자 함수를 호출하여 인스턴스를 반환한다.
+
+    arguments.callee는 호출된 함수의 이름을 나타낸다.
+    이 예제의 경우 A로 표기하여도 문제없이 동작하지만, 특정함수의 이름과 의존성을 없애기 위해서 arguments.callee를 사용하는 것이 좋다.
+  */</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span><span class="p">(</span><span class="nx">arg</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// 프로퍼티 생성과 값의 할당</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">arg</span> <span class="p">?</span> <span class="nx">arg</span> <span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">A</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">A</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 100</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// 10</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>callee는 arguments 객체의 프로퍼티로서 함수 바디 내에서 현재 실행 중인 함수를 참조할 때 사용한다.<br />
+다시 말해, 함수 바디 내에서 현재 실행 중인 함수를 반환한다.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="applaycallbind-호출">applay/call/bind 호출</h2>
+
+<p>this에 바인딩될 객체는 함수 호출 패턴에 의해 결정된다. 이는 자바스크립트 엔진이 수행하는 것이다. 이러한 자바스크립트 엔진의 암묵적 this 바인딩 이외에 this를 특정 객체에 명시적으로 바인딩하는 방법도 제공된다.<br />
+이것을 가능하는 것이 Function.prototype.apply, Function.prototype.call 메서드이다.</p>
+
+<p>이 메서드들은 모든 함수 객체의 프로토타입 객체인 Function.prototype 객체의 메서드이다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">func</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">,</span> <span class="p">[</span><span class="nx">argsArray</span><span class="p">]);</span>
+
+<span class="c1">// thisArg : 함수 내부의 this에 바인딩할 객체</span>
+<span class="c1">// argsArray : 함수에 전달할 arguments의 배열</span>
+</code></pre></div></div>
+
+<p>기억해야 할 것은 apply() 메서드를 호출하는 주체는 함수이며 <strong>apply() 메서드는 this를 특정 객체에 바인딩할 뿐, 본질적인 기능은 함수 호출이라는 것이다.</strong></p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="p">{};</span>
+
+<span class="c1">// apply 메서드는 생성자 함수 Person을 호출한다. 이 때 this에 객체 foo를 바인딩한다.</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">foo</span><span class="p">,</span> <span class="p">[</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">]);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// {name: 'name'}</span>
+</code></pre></div></div>
+
+<p>빈 객체 foo를 apply() 메서드의 첫 번째 매개변수에, argument의 배열을 두 번째 매개변수에 전달하면서 Person 함수를 호출하였다.<br />
+이 때 Person 함수의 this는 foo 객체가 된다. Person 함수는 this의 name 프로퍼티에 매개변수 name에 할당된 인수를 할당하는데 this에 바인딩된 foo 객체에는 name 프로퍼티가 없으므로 name 프로퍼티가 동적 추가되고 값이 할당된다.</p>
+
+<p>apply() 메서드의 대표적인 용도는 arguments 객체와 같은 유사 배열 객체에 배열 메서드를 사용하는 경우이다. arguments 객체는 배열이 아니기 때문에 slice() 같은 배열의 메서드를 사용할 수 없으나 apply() 메서드를 이용하면 가능하다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">convertArgsToArray</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span> <span class="c1">// Arguments(3)</span>
+
+  <span class="c1">// arguments 객체를 배열로 변환</span>
+  <span class="c1">// slice : 배열의 특정 부분에 대한 복사본 생성</span>
+  <span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span> <span class="c1">// arguments.slice</span>
+
+  <span class="c1">// var arr = [].slice.apply(arguments);</span>
+
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arr</span><span class="p">);</span> <span class="c1">// [1, 2, 3]</span>
+  <span class="k">return</span> <span class="nx">arr</span><span class="p">;</span> <span class="c1">// [1, 2, 3]</span>
+<span class="p">}</span>
+
+<span class="nx">convertArgsToArray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Array.prototype.slice.apply(arguments)는 “Array.prototype.slice()메서드를 호출하라. 단, this는 arguments 객체로 바인딩하라”는 의미가 된다.<br />
+결국 Array.prototype.slice() 메서드를 arguments 객체 자신의 메서드인 것처럼 arguments.slice()와 같은 형태로 호출하라는 것이다.</p>
+
+<p align="center"><img src="https://poiemaweb.com/img/apply.png" width="70%" /></p>
+
+<p>call() 메서드는 apply()와 기능은 같지만 apply()의 두 번째 인자에서 배열 형태로 넘긴 것을 각각 하나의 인자로 넘긴다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Person</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">foo</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]);</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">foo</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>apply()와 call() 메서드는 콜백 함수의 this를 위해서 사용되기도 한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">doSomething</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">callback</span> <span class="o">==</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// --------- 1</span>
+    <span class="nx">callback</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span> <span class="c1">// --------- 2</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// undefined</span>
+</code></pre></div></div>
+
+<p>1의 시점에서 this는 Person 객체이다. 그러나 2의 시점에서 this는 전역객체 window를 가리킨다.<br />
+콜백함수를 호출하는 외부 함수 내부의 this와 콜백함수 내부의 this가 상이하기 때문에 문맥상 문제가 발생한다.</p>
+
+<p>따라서 콜백함수를 호출하는 함수 내부의 this와 일치시켜 주어야 하는 번거로움이 발생한다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">doSomething</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">callback</span> <span class="o">==</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// 'Lee'</span>
+</code></pre></div></div>
+
+<p>ES5에 추가된 Function.prototype.bind를 사용하는 방법도 가능하다. Function.prototype.bind는 함수에 인자로 전달한 this가 바인딩된 새로운 함수를 리턴한다.</p>
+
+<p>즉, Function.prototye.bind는 Function.prototype.apply, Function.prototype.call 메서드와 같이 함수를 실행하지 않기 때문에 명시적으로 함수를 호출할 필요가 있다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">doSomething</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">callback</span> <span class="o">==</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// callback.call(this);</span>
+    <span class="c1">// this가 바인딩된 새로운 함수를 호출</span>
+    <span class="nx">callback</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">#</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">(</span><span class="dl">'</span><span class="s1">Lee</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// 'Lee'</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a href="https://poiemaweb.com/js-this">출처 : poiemaweb - 함수 호출 방식에 의해 결정되는 this</a></p>]]></content><author><name>Park jiho</name></author><category term="javascript" /><category term="javascript" /><category term="this" /><summary type="html"><![CDATA[자바스크립트의 함수는 호출될 때, 매개변수로 전달되는 인자값 이외에, arguments 객체와 this를 암묵적으로 전달 받는다.]]></summary></entry><entry><title type="html">Position</title><link href="http://localhost:4000/blog/css/position/" rel="alternate" type="text/html" title="Position" /><published>2022-02-17T00:00:00+09:00</published><updated>2022-02-17T00:00:00+09:00</updated><id>http://localhost:4000/blog/css/position</id><content type="html" xml:base="http://localhost:4000/blog/css/position/"><![CDATA[<p>position 속성은 요소에 사용되는 위치 지정 방법의 유형을 지정한다.</p>
+
+<ul>
+  <li>static</li>
+  <li>relative</li>
+  <li>fixed</li>
+  <li>absolute</li>
+  <li>sticky</li>
+</ul>
+
+<p>그 다음 요소는 위쪽, 아래쪽, 왼쪽 및 오른쪽 속성을 사용하여 배치된다.<br />
+그러나 이러한 속성은 position 속성을 먼저 설정 하지 않으면 작동하지 않으며, 위치값에 따라 다르게 작동한다.</p>
+
+<hr />
+
+<h2 id="position-static">Position: static</h2>
+
+<p>HTML 요소는 기본적으로 정적으로 배치된다.<br />
+정적 위치 요소는 top, bottom, left, right 속성의 영향을 받지 않는다.</p>
+
+<p>position: static; 이 있는 요소는 특별한 방식으로 배치되지 않는다. 항상 페이지의 정상적인 흐름에 따라 배치된다.</p>
+
+<hr />
+
+<h2 id="position-relative">Position: relative</h2>
+
+<p>position: relative; 가 있는 요소는 정상 위치를 기준으로 배치된다.</p>
+
+<p>상대적으로 배치된 요소의 top, right, bottom, left 속성을 설정하면 각각의 방향을 기준으로 태그 안쪽 방향으로 이동한다.
+바깥쪽으로 이동하게 하고 싶으면 음수 값을 주면 된다.</p>
+
+<p>다른 콘텐츠는 요소에 의해 남겨진 간격에 맞게 조정되지 않는다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+  <span class="nl">left</span><span class="p">:</span> <span class="m">30px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="position-fixed">Position: fixed</h2>
+
+<p>position: fixed가 있는 요소는 뷰포트에서 상대적으로 위치하므로 페이지가 스크롤되더라도 항상 같은 위치를 유지한다.
+top, right, bottom, left 속성은 요소의 위치를 지정하는 데 사용된다.</p>
+
+<p>고정 요소는 일반적으로 위치했을 때 페이지에 공백을 남기지 않는다.</p>
+
+<p>참고 : fixed div는 더이상 width가 100%가 아니다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">/* div는 더이상 width 100%가 아님 */</span>
+<span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nb">fixed</span><span class="p">;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">left</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="position-absolute">Position: absolute</h2>
+
+<p>position: absolute가 있는 요소는 position: static 속성을 가지고 있지 않은 조상을 기준으로 움직인다.
+만약, relative, absolute, fixed인 태그가 없으면 가장 위의 태그인 문서 본문(body)을 기준으로 사용하고, 페이지 스크롤과 함께 이동한다.</p>
+
+<p>참고: absolute 위치 요소는 일반 흐름에서 제거되며 요소와 겹칠 수 있고, div여도 더이상 width: 100%가 아니다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">/* div는 width 100%가 아님 */</span>
+<span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="m">50px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="position-sticky">Position: sticky</h2>
+
+<p>position: sticky가 있는 요소는 사용자의 스크롤 위치를 기준으로 배치된다.</p>
+
+<p>해당 요소는 설정된 위치에 도달하기 전까지는 static 속성처럼 행동하다가 설정된 위치에 다다르면 fixed처럼 고정된다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="n">sticky</span><span class="p">;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>위 예시에서 div의 상단이 뷰포트 상단 10px 위치에 도달하면 해당 상단에 고정된다.</p>
+
+<h3 id="도달-위치-설정이-되어있는지-확인">도달 위치 설정이 되어있는지 확인</h3>
+
+<p>sticky 속성은 top, bottom, left, right 속성 중 하나는 반드시 필요하다.<br />
+설정된 위치에서 fixd 속성처럼 동작하려면 기준 위치가 필요하기 때문이다.</p>
+
+<h3 id="크로스-브라우징-및-브라우저-확인">크로스 브라우징 및 브라우저 확인</h3>
+
+<p>sticky는 IE는 지원하지 않으며, Safari에서도 동작하게 하려면 -webkit-sticky 속성을 추가해야 한다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="n">-webkit-sticky</span><span class="p">;</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="n">sticky</span><span class="p">;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="부모-또는-조상-노드에-overflow-속성이-설정되어-있는지-확인">부모 또는 조상 노드에 overflow 속성이 설정되어 있는지 확인</h3>
+
+<p>sticky 속성의 경우, 부모 또는 조상 노드에 overflow 속성이 설정되어 있으면 동작하지 않는다.</p>
+
+<ul>
+  <li>overflow: hidden</li>
+  <li>overflow: scroll</li>
+  <li>overflow: auto</li>
+</ul>
+
+<h3 id="부모-노드의-height가-설정되어-있는지-확인">부모 노드의 height가 설정되어 있는지 확인</h3>
+
+<p>sticky 속성을 갖는 엘리먼트의 부모 노드는 반드시 height가 설정되어 있어야 한다.<br />
+그렇지 않으면 sticky 속성의 엘리먼트는 static 속성처럼 동작하게 된다.</p>
+
+<p>height: xx% 와 같이 퍼센트로 설정한 경우에는 동작하지 않는다.</p>
+
+<blockquote>
+  <p>올바른 예시<br />
+height: auto<br />
+height: unset<br />
+height: 100vh<br />
+height: 1000px<br />
+height: 5em</p>
+</blockquote>
+
+<hr />
+
+<p><a href="https://www.w3schools.com/css/css_positioning.asp">출처 : W3S - CSS Layout The position Property </a><br />
+<a href="https://deeplify.dev/front-end/markup/position-sticky">출처 : DEEPLIFY - Position sticky 적용 방법 </a></p>]]></content><author><name>Park jiho</name></author><category term="css" /><category term="css" /><category term="position" /><summary type="html"><![CDATA[position 속성은 요소에 사용되는 위치 지정 방법의 유형을 지정한다.]]></summary></entry><entry><title type="html">이넘(Enums)</title><link href="http://localhost:4000/blog/typescript/enum/" rel="alternate" type="text/html" title="이넘(Enums)" /><published>2022-02-15T00:00:00+09:00</published><updated>2022-02-15T00:00:00+09:00</updated><id>http://localhost:4000/blog/typescript/enum</id><content type="html" xml:base="http://localhost:4000/blog/typescript/enum/"><![CDATA[<p>이넘은 특정 값들의 집합을 의미하는 자료형이다. 예를 들면 아래와 같은 목록이 이넘이 될 수 있다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>나이키
+아디다스
+뉴발란스
+</code></pre></div></div>
+
+<p>이넘은 다른 프로그래밍 언어를 다뤄본 사람들에게는 친숙한 타입이다. 타입스크립트에서는 문자형 이넘과 숫자형 이넘을 지원한다.</p>
+
+<hr />
+
+<h2 id="숫자형-이넘">숫자형 이넘</h2>
+
+<p>타입스크립트에서 숫자형 이넘은 아래와 같이 선언한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Direction</span> <span class="p">{</span>
+  <span class="nx">up</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">Down</span><span class="p">,</span>
+  <span class="nx">Left</span><span class="p">,</span>
+  <span class="nx">Right</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>위와 같이 숫자형 이넘을 선언할 때 초기 값을 주면 초기 값부터 차례로 1씩 증가한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>up - 1
+Down - 2
+Left - 3
+Right - 4
+</code></pre></div></div>
+
+<p>만약 아래와 같이 초기 값을 주지 않으면 0부터 차례로 1씩 증가한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Direction</span> <span class="p">{</span>
+  <span class="nx">Up</span><span class="p">,</span> <span class="c1">// 0</span>
+  <span class="nx">Down</span><span class="p">,</span> <span class="c1">// 1</span>
+  <span class="nx">Left</span><span class="p">,</span> <span class="c1">// 2</span>
+  <span class="nx">Right</span><span class="p">,</span> <span class="c1">// 3</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="숫자형-이넘-사용하기">숫자형 이넘 사용하기</h2>
+
+<p>이렇게 선언한 이넘은 아래와 같이 사용할 수 있다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Response</span> <span class="p">{</span>
+  <span class="nx">No</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="nx">Yes</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">respond</span><span class="p">(</span><span class="nx">recipient</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">message</span><span class="p">:</span> <span class="nx">Response</span><span class="p">):</span> <span class="k">void</span> <span class="p">{</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="nx">respond</span><span class="p">(</span><span class="dl">'</span><span class="s1">Captain Pangyo</span><span class="dl">'</span><span class="p">,</span> <span class="nx">Resonse</span><span class="p">.</span><span class="nx">Yes</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>그리고 숫자형 이넘에서 주의할 점은 선언할 때 만약 이넘 값에 다른 이넘 타입의 값을 사용하면, 선언하는 이넘의 첫 번째 값에 초기화를 해줘야 한다는 점이다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Wrong</span> <span class="p">{</span>
+  <span class="nx">A</span> <span class="o">=</span> <span class="nx">getSomeValue</span><span class="p">();</span>
+  <span class="nx">B</span><span class="p">,</span> <span class="c1">// Error, 초기화가 필요함</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="문자형-이넘">문자형 이넘</h2>
+
+<p>문자형 이넘은 앞에서 살펴본 숫자형 이넘과 개념적으로는 거의 비슷하지만, 런타임에서의 미세한 차이가 있다.</p>
+
+<p>일단 문자형 이넘은 이넘 값 전부 다 특정 문자 또는 다른 이넘 값으로 초기화 해줘야 한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Direction</span> <span class="p">{</span>
+  <span class="nx">Up</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">UP</span><span class="dl">'</span><span class="p">,</span>
+  <span class="nx">Down</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">DOWN</span><span class="dl">'</span><span class="p">,</span>
+  <span class="nx">Left</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">LEFT</span><span class="dl">'</span><span class="p">,</span>
+  <span class="nx">Right</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">RIGHT</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>또한, 문자형 이넘에는 숫자형 이넘과는 다르게 auto-incrementing이 없다.<br />
+대신 디버깅을 할 때 숫자형 이넘의 값은 가끔 불명확하게 나올 때가 있지만 문자형 이넘은 항상 명확한 값이 나와서 읽기 편하다.</p>
+
+<hr />
+
+<h2 id="복합-이넘heterogeneous-enums">복합 이넘(Heterogeneous Enums)</h2>
+
+<p>기술적으로 이넘에 문자와 숫자를 혼합하여 생성 할 수 있다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">BooleanLikeHeterogeneousEnums</span> <span class="p">{</span>
+  <span class="nx">No</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="nx">Yes</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">YES</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>하지만 권고하는 방식은 아니며, 최대한 같은 타입으로 이루어진 이넘을 사용하는 것이 좋다.</p>
+
+<hr />
+
+<h2 id="런타임-시점에서의-이넘-특징">런타임 시점에서의 이넘 특징</h2>
+
+<p>이넘은 런타임시에 실제 객체 형태로 존재한다. 예를 들어 아래와 같은 이넘은</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">E</span> <span class="p">{</span>
+  <span class="nx">X</span><span class="p">,</span>
+  <span class="nx">Y</span><span class="p">,</span>
+  <span class="nx">Z</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>실제로 아래와 같이 함수로 전달될 수 있다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">E</span> <span class="p">{</span>
+  <span class="nx">X</span><span class="p">,</span>
+  <span class="nx">Y</span><span class="p">,</span>
+  <span class="nx">Z</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">getX</span><span class="p">(</span><span class="nx">obj</span><span class="p">:</span> <span class="p">{</span> <span class="nl">X</span><span class="p">:</span> <span class="kr">number</span> <span class="p">})</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">X</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">getX</span><span class="p">(</span><span class="nx">E</span><span class="p">);</span> <span class="c1">// E가 X라는 숫자 프로퍼티를 가지고 있기 때문에 동작하는 코드이다.</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="컴파일-시점에서의-이넘-특징">컴파일 시점에서의 이넘 특징</h2>
+
+<p>이넘이 런타임 시점에서는 실제 객체이지만, keyof 키워드는 일반적인 객체에서 기대하는 동작과 다르게 동작하기 때문에 주의해야 한다.
+대신 typeof를 사용하면 모든 열거형의 키를 문자열로 나타내는 타입을 가져온다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">LogLevel</span> <span class="p">{</span>
+  <span class="nx">ERROR</span><span class="p">,</span>
+  <span class="nx">WARN</span><span class="p">,</span>
+  <span class="nx">INFO</span><span class="p">,</span>
+  <span class="nx">DEBUG</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * type LogLevelStrings = 'ERROR' | 'WARN' | 'INFO' | 'DEBUG';
+ */</span>
+<span class="kd">type</span> <span class="nx">LogLevelStrings</span> <span class="o">=</span> <span class="kr">keyof</span> <span class="k">typeof</span> <span class="nx">LogLevel</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">printImportant</span><span class="p">(</span><span class="nx">key</span><span class="p">:</span> <span class="nx">LogLevelStrings</span><span class="p">,</span> <span class="nx">message</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">num</span> <span class="o">=</span> <span class="nx">LogLevel</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">num</span> <span class="o">&lt;=</span> <span class="nx">LogLevel</span><span class="p">.</span><span class="nx">WARN</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Log level key is:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">key</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Log level value is:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">num</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Log level message is:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">message</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="nx">printImportant</span><span class="p">(</span><span class="dl">'</span><span class="s1">ERROR</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">This is a message</span><span class="dl">'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="리버스-매핑reverse-mapping">리버스 매핑(Reverse Mapping)</h2>
+
+<p>리버스 매핑은 숫자형 이넘에만 존재하는 특징이다.<br />
+이넘의 키(key)로 값(value)를 얻을 수 있고, 값(value)로 키(key)를 얻을 수도 있다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">Enum</span> <span class="p">{</span>
+  <span class="nx">A</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">Enum</span><span class="p">.</span><span class="nx">A</span><span class="p">;</span> <span class="c1">// 키로 값 획득하기</span>
+<span class="kd">let</span> <span class="nx">keyName</span> <span class="o">=</span> <span class="nx">Enum</span><span class="p">[</span><span class="nx">a</span><span class="p">];</span> <span class="c1">// "A", 값으로 키 획득하기</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a href="https://joshua1988.github.io/ts/guide/enums.html">출처: 타입스크립트 핸드북 - 이넘(Enums)</a></p>]]></content><author><name>Park jiho</name></author><category term="typescript" /><category term="typescript" /><category term="enum" /><summary type="html"><![CDATA[이넘은 특정 값들의 집합을 의미하는 자료형이다. 예를 들면 아래와 같은 목록이 이넘이 될 수 있다.]]></summary></entry><entry><title type="html">GET과 POST</title><link href="http://localhost:4000/blog/web/get-and-post/" rel="alternate" type="text/html" title="GET과 POST" /><published>2022-02-14T00:00:00+09:00</published><updated>2022-02-14T00:00:00+09:00</updated><id>http://localhost:4000/blog/web/get-and-post</id><content type="html" xml:base="http://localhost:4000/blog/web/get-and-post/"><![CDATA[<h2 id="get">GET</h2>
+
+<p>GET은 클라이언트에서 서버로 어떠한 리소스로부터 <strong>정보를 요청하기 위해</strong> 사용되는 메서드이다.<br />
+예를 들면 게시판의 게시물을 조회할 때 쓸 수 있다.<br />
+GET을 통한 요청은 URL 주소 끝에 파라미터로 포함되어 전송되며, 이 부분을 쿼리 스트링이라고 부른다.</p>
+
+<blockquote>
+  <p>GET은 URL 끝에 “?”를 붙이고 변수명1=값1&amp;변수명2=값2.. 형식으로 이어 붙이는 방식이다.<br />
+www.example.com/show?name1=value1&amp;name2=value2</p>
+</blockquote>
+
+<p>서버에서는 name1과 name2라는 파라미터 명으로 각각 value1과 value2의 파라미터 값을 전달 받을 수 있다.</p>
+
+<hr />
+
+<h2 id="get의-특징">GET의 특징</h2>
+
+<ul>
+  <li>GET 요청은 캐시가 가능하다.
+    <ul>
+      <li>GET을 통해 서버에 리소스를 요청할 때 웹 캐시가 요청을 가로채 서버로부터 리소스를 다시 다운로드하는 대신 리소스의 복사본을 반환한다.</li>
+      <li>HTTP 헤더에서 cache-control 헤더를 통해 캐시 옵션을 지정할 수 있다.</li>
+    </ul>
+  </li>
+  <li>
+    <p>GET 요청은 브라우저 히스토리에 남는다.</p>
+  </li>
+  <li>
+    <p>GET 요청은 북마크 될 수 있다.</p>
+  </li>
+  <li>GET 요청은 길이 제한이 있다.
+    <ul>
+      <li>GET 요청의 길이 제한은 표준이 따로 있는 것은 아니며 브라우저마다 제한이 다르다고 한다.</li>
+    </ul>
+  </li>
+  <li>GET 요청은 중요한 정보를 다루면 안된다.(보안)
+    <ul>
+      <li>GET 요청은 파라미터에 다 노출되기 때문에 최소한의 보안 의식이라 생각하자</li>
+    </ul>
+  </li>
+  <li>GET은 데이터를 요청할 때만 사용된다.</li>
+</ul>
+
+<hr />
+
+<h2 id="post">POST</h2>
+
+<p>POST는 클라이언트에서 서버로 리소스를 <strong>생성하거나 업데이트를 하기 위해서</strong> 데이터를 보낼 때 사용되는 메서드이다.
+예를 들면 게시판에 게시글을 작성하는 작업을 할 때 사용된다.</p>
+
+<p>POST는 전송할 데이터를 HTTP 메시지 body 부분에 담아서 서버로 보낸다. (body의 타입은 Content-type 헤더에 따라 결정된다.) GET에서 URL의 파라미터로 보냈던 name1=vaule1&amp;name2=value2가 body에 담겨 보내진다고 생각하면 된다.</p>
+
+<p>POST로 데이터를 전송할 때 길이 제한이 따로 없어서 용량이 큰 데이터를 보낼 때 사용하거나, GET처럼 데이터가 외부적으로 드러나지 않기 때문에 보안이 필요한 부분에 많이 사용된다.<br />
+<strong>하지만 데이터를 암호화하지 않으면 body의 데이터도 결국 볼 수 있는건 똑같다.</strong></p>
+
+<p>POST를 통한 데이터 전송은 보통 HTML form을 통해 서버로 전송된다.</p>
+
+<hr />
+
+<h2 id="post의-특징">POST의 특징</h2>
+
+<ul>
+  <li>
+    <p>POST 요청은 캐시되지 않는다.</p>
+  </li>
+  <li>
+    <p>POST 요청은 브라우저 히스토리에 남지 않는다.</p>
+  </li>
+  <li>
+    <p>POST 요청은 북마크 되지 않는다.</p>
+  </li>
+  <li>
+    <p>POST 요청은 데이터 길이에 제한이 없다.</p>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="get과-post의-차이">GET과 POST의 차이</h2>
+
+<ul>
+  <li>사용목적
+    <ul>
+      <li>GET : 서버의 리소스에서 데이터를 요청할 때</li>
+      <li>POST : 서버의 리소스를 새로 생성하거나 업데이트를 할 때</li>
+      <li>DB로 따지면 GET은 Select에 가깝고, POST는 Create에 가깝다고 볼 수 있다.</li>
+    </ul>
+  </li>
+  <li>요청에 body 유무
+    <ul>
+      <li>GET : URL 파라미터에 요청하는 데이터를 담아 보내기 때문에 HTTP 메시지에 body가 없다.</li>
+      <li>POST : body에 데이터를 담아 보내기 때문에 당연히 HTTP 메시지에 body가 존재한다.</li>
+    </ul>
+  </li>
+  <li>멱등성(idempotent) : 연산을 여러 번 적용하더라도 결과가 달라지지 않는 성질
+    <ul>
+      <li>GET : 리소스를 조회한다는 점에서 여러 번 요청하더라도 응답이 똑같을 것이다.</li>
+      <li>POST : 리소스를 새로 생성하거나 업데이트할 때 사용되기 때문에 멱등이 아니라고 볼 수 있다.(POST 요청이 발생하면 서버가 변경될 수 있다.)</li>
+    </ul>
+  </li>
+</ul>
+
+<blockquote>
+  <p>📌 WHY?</p>
+
+  <p>GET과 POST는 이런 차이들이 있기 때문에 사용하려는 목적을 확인한 이후에 사용해야 한다.</p>
+
+  <p>GET과 POST 이외에도 PUT, DELETE등을 적절히 사용하는게 좋은데, 예를 들어 봇의 경우 사이트를 돌아다니면서 GET 요청을 날린다.
+이럴 때 DELETE 등을 GET으로 처리하면 봇에 의해 서버에 있는 리소스들이 삭제 되는 상황이 일어날 수 있다.<br />
+항상 기술을 사용할 때 왜 를 잊지말자.</p>
+</blockquote>
+
+<hr />
+
+<p><a href="https://noahlogs.tistory.com/35">출처 : 인생의 로그캣 - get과 post의 차이</a></p>]]></content><author><name>Park jiho</name></author><category term="web" /><category term="web" /><category term="get" /><category term="post" /><summary type="html"><![CDATA[GET]]></summary></entry><entry><title type="html">Margins</title><link href="http://localhost:4000/blog/css/padding/" rel="alternate" type="text/html" title="Margins" /><published>2022-02-13T00:00:00+09:00</published><updated>2022-02-13T00:00:00+09:00</updated><id>http://localhost:4000/blog/css/padding</id><content type="html" xml:base="http://localhost:4000/blog/css/padding/"><![CDATA[<p>css padding 속성은 정의된 테두리 내부의 요소 콘텐츠 주위에 공간을 생성하는 데 사용한다.<br />
+css를 사용하면 padding을 완전히 제어할 수 있다. 요소의 각 측면(위, 오른쪽, 아래, 왼쪽)에 대한 padding을 설정하는 속성이 있다.</p>
+
+<hr />
+
+<h2 id="padding-individual-sides">Padding Individual Sides</h2>
+
+<p>css에는 요소의 각 측면에 대한 padding을 지정하기 위한 속성이 있다.</p>
+
+<ul>
+  <li>padding-top</li>
+  <li>padding-right</li>
+  <li>padding-bottom</li>
+  <li>padding-left</li>
+</ul>
+
+<p>모든 padding 속성은 아래의 값을 가질 수 있다.</p>
+
+<ul>
+  <li>length - px, pt, cm 등으로 padding을 지정한다.</li>
+  <li>% - 포함하는 요소 너비의 %로 padding을 지정한다.</li>
+  <li>
+    <p>inherit - padding이 부모 요소에서 상속되어야 함을 지정한다.</p>
+  </li>
+  <li>음수 값은 허용되지 않는다.</li>
+</ul>
+
+<hr />
+
+<h2 id="padding---shorthand-property">Padding - Shorthand Property</h2>
+
+<p>코드를 줄이기 위해 하나의 속성에 대한 모든 padding 속성을 지정할 수 있다.</p>
+
+<p>padding 속성에 4개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span> <span class="m">50px</span> <span class="m">75px</span> <span class="m">100px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상단 패딩 25px</li>
+  <li>오른쪽 패딩 50px</li>
+  <li>하단 패딩 75px</li>
+  <li>왼쪽 패딩 100px</li>
+</ul>
+
+<p>padding 속성에 3개의 값이 있는 경우:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span> <span class="m">50px</span> <span class="m">75px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상단 패딩 25px</li>
+  <li>오른쪽 및 왼쪽 패딩 50px</li>
+  <li>하단 패딩 75px</li>
+</ul>
+
+<p>padding 속성에 2개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span> <span class="m">50px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상단 및 하단 패딩 25px</li>
+  <li>오른쪽 및 왼쪽 패딩 50px</li>
+</ul>
+
+<p>padding 속성에 1개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>4개의 패딩 모두 25px</li>
+</ul>
+
+<hr />
+
+<h2 id="padding-and-element-width">Padding and Element Width</h2>
+
+<p>css width 속성은 요소의 콘텐츠 영역 너비를 지정한다. 콘텐츠 영역은 요소의 패딩, 테두리 및 여백 내부의 부분이다.<br />
+따라서 요소에 지정된 너비가 있는 경우, 해당 요소에 추가된 패딩이 요소의 전체 너비에 추가된다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>위 예시에서 div 요소의 너비는 300px이다.<br />
+그러나 div 요소의 실제 너비는 350px(300px + 왼쪽 패딩 25px + 오른쪽 패딩 25px)이다.</p>
+
+<p>패딩의 양에 관계없이 너비를 300px로 유지하려면 box-sizing 속성을 사용해야 한다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+  <span class="nl">box-sizing</span><span class="p">:</span> <span class="n">border-box</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a href="https://www.w3schools.com/css/css_padding.asp">출처 : W3S - CSS padding</a></p>]]></content><author><name>Park jiho</name></author><category term="css" /><category term="css" /><category term="padding" /><summary type="html"><![CDATA[css padding 속성은 정의된 테두리 내부의 요소 콘텐츠 주위에 공간을 생성하는 데 사용한다. css를 사용하면 padding을 완전히 제어할 수 있다. 요소의 각 측면(위, 오른쪽, 아래, 왼쪽)에 대한 padding을 설정하는 속성이 있다.]]></summary></entry><entry><title type="html">Margins</title><link href="http://localhost:4000/blog/css/margin/" rel="alternate" type="text/html" title="Margins" /><published>2022-02-11T00:00:00+09:00</published><updated>2022-02-11T00:00:00+09:00</updated><id>http://localhost:4000/blog/css/margin</id><content type="html" xml:base="http://localhost:4000/blog/css/margin/"><![CDATA[<p>margin 속성은 정의된 테두리 외부의 요소 주위에 공간을 만드는 데 사용된다.<br />
+CSS를 사용하면 여백을 완전히 제어할 수 있다. 요소의 각 측면 (위, 오른쪼그 아래, 왼쪽)에 대한 여백을 설정하는 속성이 있다.</p>
+
+<hr />
+
+<h2 id="margin---individual-sides">Margin - Individual Sides</h2>
+
+<p>CSS에는 요소의 각 측면에 대한 여백을 지정하는 속성이 있다.</p>
+
+<ul>
+  <li>margin-top</li>
+  <li>margin-right</li>
+  <li>margin-bottom</li>
+  <li>margin-left</li>
+</ul>
+
+<p>모든 여백 속성은 아래와 같은 값을 가질 수 있다.</p>
+
+<ul>
+  <li>auto - 브라우저가 여백을 계산한다.</li>
+  <li>length - 여백을 px, pt, cm 등으로 지정한다.</li>
+  <li>% - 포함하는 요소 너비의 %로 여백을 지정한다.</li>
+  <li>
+    <p>inherit - 여백이 부모 요소에서 상속되어야 함을 지정한다.</p>
+  </li>
+  <li>모든 값은 음수 값을 허용한다.</li>
+</ul>
+
+<hr />
+
+<h2 id="margin---shorthand-property">Margin - Shorthand Property</h2>
+
+<p>코드를 줄이려면 하나의 속성에 모든 속성을 지정할 수 있다.</p>
+
+<p>margin 속성에 4개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">25px</span> <span class="m">50px</span> <span class="m">75px</span> <span class="m">100px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상단 여백 25px</li>
+  <li>오른쪽 여백 50px</li>
+  <li>하단 여백 75px</li>
+  <li>왼쪽 여백 100px</li>
+</ul>
+
+<p>margin 속성에 3개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">25px</span> <span class="m">50px</span> <span class="m">75px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상단 여백 25px</li>
+  <li>오른쪽 및 왼쪽 여백 50px</li>
+  <li>하단 여백 75px</li>
+</ul>
+
+<p>margin 속성에 2개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">25px</span> <span class="m">50px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상단 및 하단 여백 25px</li>
+  <li>오른쪽 및 왼쪽 여백 50px</li>
+</ul>
+
+<p>margin 속성에 1개의 값이 있는 경우 :</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>상하좌우 여백 모두 25px</li>
+</ul>
+
+<hr />
+
+<h2 id="auto">auto</h2>
+
+<p>margin 속성을 auto로 설정하면 컨테이너 내에서 요소를 가운데로 맞출 수 있다.
+그러면 요소가 지정된 너비를 차지하고 나머지 공간은 왼쪽과 오른쪽 여백 사이에 균등하게 분할된다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="nb">auto</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="inherit">inherit</h2>
+
+<p>아래 예시에서 p 요소의 왼쪽 여백이 상위 요소 div에서 상속되도록 한다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">margin-left</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">margin-left</span><span class="p">:</span> <span class="nb">inherit</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="margin-collapse">Margin Collapse</h2>
+
+<p>요소의 상단 및 하단 여백은 때때로 두 여백 중 가장 큰 여백과 동일한 단일 여백으로 축소된다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">h1</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span> <span class="m">0</span> <span class="m">50px</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">h2</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">20px</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>위 예시에서 h1 요소의 아래쪽 여백은 50px이고 h2 요소의 위쪽 여백은 20px로 설정되어 있다.
+상식적으로 h1과 h2 사이의 수직 여백은 총 70px이 되어야 할 것 같지만, 실제로는 여백 축소로 인해 50px이 된다.</p>
+
+<hr />
+
+<p><a href="https://www.w3schools.com/css/css_margin.asp">출처 : W3S - CSS margin</a></p>]]></content><author><name>Park jiho</name></author><category term="css" /><category term="css" /><category term="margin" /><summary type="html"><![CDATA[margin 속성은 정의된 테두리 외부의 요소 주위에 공간을 만드는 데 사용된다. CSS를 사용하면 여백을 완전히 제어할 수 있다. 요소의 각 측면 (위, 오른쪼그 아래, 왼쪽)에 대한 여백을 설정하는 속성이 있다.]]></summary></entry><entry><title type="html">인터페이스</title><link href="http://localhost:4000/blog/typescript/interface/" rel="alternate" type="text/html" title="인터페이스" /><published>2022-02-09T00:00:00+09:00</published><updated>2022-02-09T00:00:00+09:00</updated><id>http://localhost:4000/blog/typescript/interface</id><content type="html" xml:base="http://localhost:4000/blog/typescript/interface/"><![CDATA[<p>인터페이스는 상호 간에 정의한 약속 혹은 규칙을 의미한다. 타입 스크립트에서의 인터페이스는 보통 다음과 같은 범주에 대해 약속을 정의할 수 있다.</p>
+
+<ul>
+  <li>객체의 스펙(속성과 속성의 타입)</li>
+  <li>함수의 파라미터</li>
+  <li>함수의 스펙(파라미터, 반환 타입 등)</li>
+  <li>배열과 객체를 접근하는 방식</li>
+  <li>클래스</li>
+</ul>
+
+<hr />
+
+<h2 id="인터페이스-맛보기">인터페이스 맛보기</h2>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">person</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Capt</span><span class="dl">'</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">28</span> <span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">logAge</span><span class="p">(</span><span class="nx">obj</span><span class="p">:</span> <span class="p">{</span> <span class="nl">age</span><span class="p">:</span> <span class="kr">number</span> <span class="p">})</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">age</span><span class="p">);</span> <span class="c1">// 28</span>
+<span class="p">}</span>
+
+<span class="nx">logAge</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span> <span class="c1">// 28</span>
+</code></pre></div></div>
+
+<p>위 logAge() 함수에서 받는 인자의 형태는 age를 속성으로 갖는 객체이다. 이렇게 인자를 받을 때 단순한 타입 뿐만 아니라 객체의 속성 타입까지 정의할 수 있다.</p>
+
+<p>여기에 인터페이스를 적용하면 아래와 같다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">personAge</span> <span class="p">{</span>
+  <span class="nl">age</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">logAge</span><span class="p">(</span><span class="nx">obj</span><span class="p">:</span> <span class="nx">personAge</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">age</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">person</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Capt</span><span class="dl">'</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">28</span> <span class="p">};</span>
+<span class="nx">logAge</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>이제 logAge()의 인자가 좀 더 명시적으로 바뀌었다. logAge()의 인자는 personAge라는 타입을 가져야 한다.</p>
+
+<p>인터페이스를 인자로 받아 사용할 때 항상 인터페이스의 속성 갯수와 인자로 받는 속성 갯수를 일치시키지 않아도 된다.<br />
+다시 말해, 인터페이스에 정의된 속성, 타입의 조건만 만족한다면 객체의 속성 갯수가 더 많아도 상관 없다.<br />
+또한, 인터페이스에 선언된 속성 순서를 지키지 않아도 된다.</p>
+
+<hr />
+
+<h2 id="옵션-속성">옵션 속성</h2>
+
+<p>인터페이스를 사용할 때 인터페이스에 정의되어 있는 속성을 모두 다 꼭 사용하지 않아도 된다. 이를 옵션 속성이라고 한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">인터페이스_이름</span> <span class="p">{</span>
+  <span class="nl">속성</span><span class="p">?:</span> <span class="nx">타입</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>이처럼 속성 끝에 ?를 붙인다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">hop</span><span class="p">?:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">myBeer</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Cass</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">brewBeer</span><span class="p">(</span><span class="nx">beer</span><span class="p">:</span> <span class="nx">CraftBeer</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">beer</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span> <span class="c1">// Cass</span>
+<span class="p">}</span>
+
+<span class="nx">brewBeer</span><span class="p">(</span><span class="nx">myBeer</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>코드를 보면 brewBeer() 함수에서 Beer 인터페이스를 인자의 타입으로 선언했음에도 불구하고, 인자로 넘긴 객체에는 hop 속성이 없다. 왜냐하면 hop을 옵션 속성으로 선언했기 때문이다.</p>
+
+<hr />
+
+<h2 id="옵션-속성의-장점">옵션 속성의 장점</h2>
+
+<p>옵션 속성의 장점은 단순히 인터페이스를 사용할 때 속성을 선택적으로 적용할 수 있다는 것 뿐만 아니라, 인터페이스에 정의되어 있지 않은 속성에 대해서 인지시켜줄 수 있다는 점이다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">hop</span><span class="p">?:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">myBeer</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Cass</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">brewBeer</span><span class="p">(</span><span class="nx">beer</span><span class="p">:</span> <span class="nx">CraftBeer</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">beer</span><span class="p">.</span><span class="nx">brewery</span><span class="p">);</span> <span class="c1">// Error: property 'brewery' does not exist on type 'Beer'</span>
+<span class="p">}</span>
+
+<span class="nx">brewBeer</span><span class="p">(</span><span class="nx">myBeer</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>위와 같이 인터페이스에 정의되어 있지 않은 속성에 대해서는 오류를 표시한다. 만약 아래와 같이 오탈자가 나더라도 오류를 통해 알려준다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">hop</span><span class="p">?:</span> <span class="kr">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">brewBeer</span><span class="p">(</span><span class="nx">beer</span><span class="p">:</span> <span class="nx">CraftBeer</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">beer</span><span class="p">.</span><span class="nx">nam</span><span class="p">);</span> <span class="c1">// Error: Property 'nam' does not exist on type 'Beer'</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="읽기-전용-속성">읽기 전용 속성</h2>
+
+<p>읽기 전용 속성은 인터페이스로 객체를 처음 생성할 때만 값을 할당하고 그 이후에는 변경할 수 없는 속성을 의미한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">인터페이스_이름</span> <span class="p">{</span>
+  <span class="k">readonly</span> <span class="nx">속성</span><span class="p">:</span> <span class="nx">타입</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>인터페이스로 객체를 선언하고 나서 수정하려고 하면 아래와 같이 오류가 난다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="k">readonly</span> <span class="nx">brand</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">myBeer</span><span class="p">:</span> <span class="nx">CraftBeer</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">brand</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Belgian Monk</span><span class="dl">'</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="nx">myBeer</span><span class="p">.</span><span class="nx">brand</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Korean Carpenter</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// Error</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="읽기-전용-배열">읽기 전용 배열</h2>
+
+<p>배열을 선언할 때 ReadonlyArray타입을 사용하면 읽기 전용 배열을 생성할 수 있다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">arr</span><span class="p">:</span> <span class="nx">ReadonlyArray</span><span class="o">&lt;</span><span class="kr">number</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+<span class="nx">arr</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// error</span>
+<span class="nx">arr</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span> <span class="c1">// error</span>
+<span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span> <span class="c1">// error</span>
+</code></pre></div></div>
+
+<p>위처럼 배열을 ReadonlyArray로 선언하면 배열의 내용을 변경할 수 없다. 선언하는 시점에만 값을 정의할 수 있으니 주의해서 사용해야 한다.</p>
+
+<hr />
+
+<h1 id="객체-선언과-관련된-타입-체킹">객체 선언과 관련된 타입 체킹</h1>
+
+<p>타입스크립트는 인터페이스를 이용하여 객체를 선언할 때 좀 더 엄밀한 속성 검사를 진행한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="nl">brand</span><span class="p">?:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">brewBeer</span><span class="p">(</span><span class="nx">beer</span><span class="p">:</span> <span class="nx">CraftBeer</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+<span class="nx">brewBeer</span><span class="p">({</span> <span class="na">brandon</span><span class="p">:</span> <span class="dl">'</span><span class="s1">what</span><span class="dl">'</span> <span class="p">});</span>
+<span class="c1">// Error: Object literal may only specify know properties, but 'brandon' does not exist in type 'CraftBeer'. Did you mean to write 'brand'?</span>
+</code></pre></div></div>
+
+<p>위 코드를 보면 CraftBeer 인터페이스에는 brand라고 선언되어 있지만 brewBeer() 함수에 인자로 넘기는 myBeer객체에는 brandon이 선언되어 있어서 오탈자 점검을 요하는 오류가 난다.</p>
+
+<p>만약 이런 타입 추론을 무시하고 싶다면 아래와 같이 선언한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">myBeer</span> <span class="o">=</span> <span class="p">{</span> <span class="na">brandon</span><span class="p">:</span> <span class="dl">'</span><span class="s1">what</span><span class="dl">'</span> <span class="p">};</span>
+<span class="nx">brewBeer</span><span class="p">(</span><span class="nx">myBeer</span> <span class="k">as</span> <span class="nx">CraftBeer</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>만약 인터페이스에 정의하지 않은 속성들을 추가로 사용하고 싶을 때는 아래와 같은 방법을 사용한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="nl">brand</span><span class="p">?:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="p">[</span><span class="nx">propName</span><span class="p">:</span> <span class="kr">string</span><span class="p">]:</span> <span class="kr">any</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="함수타입">함수타입</h2>
+
+<p>인터페이스는 함수의 타입을 정의할 때에도 사용할 수 있다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">login</span> <span class="p">{</span>
+  <span class="p">(</span><span class="nx">username</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">password</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="nx">boolean</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>함수의 인자의 타입과 반환 값의 타입을 정한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">loginUser</span><span class="p">:</span> <span class="nx">login</span><span class="p">;</span>
+<span class="nx">loginUser</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">pw</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">로그인 했습니다</span><span class="dl">'</span><span class="p">);</span>
+  <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="클래스-타입">클래스 타입</h2>
+
+<p>C#이나 자바처럼 타입스크립트에서도 클래스가 일정 조건을 만족하도록 타입 규칙을 정할 수 있다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="nl">beerName</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nx">nameBeer</span><span class="p">(</span><span class="nx">beer</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">myBeer</span> <span class="k">implements</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="nl">beerName</span><span class="p">:</span> <span class="kr">string</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Baby Guinness</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">nameBeer</span><span class="p">(</span><span class="nx">b</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">beerName</span> <span class="o">=</span> <span class="nx">b</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">constructor</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="인터페이스-확장">인터페이스 확장</h2>
+
+<p>클래스와 마찬가지로 인터페이스도 인터페이스 간 확장이 가능하다. 이를 통해 한 인터페이스의 속성을 다른 인터페이스로 복사할 수 있으므로 인터페이스를 재사용 가능한 구성 요소로 분리하는 방법에 더 많은 유연성을 제공한다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Developer</span> <span class="kd">extends</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">skill</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">fe</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">as</span> <span class="nx">Developer</span><span class="p">;</span>
+<span class="nx">fe</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">josh</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">fe</span><span class="p">.</span><span class="nx">skill</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">TypeScript</span><span class="dl">'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>혹은 아래와 같이 여러 인터페이스를 상속받아 사용할 수 있다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">Person</span> <span class="p">{</span>
+  <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Drinker</span> <span class="p">{</span>
+  <span class="nl">drink</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">interface</span> <span class="nx">Developer</span> <span class="kd">extends</span> <span class="nx">Person</span><span class="p">,</span> <span class="nx">Drinker</span> <span class="p">{</span>
+  <span class="nl">skill</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">let</span> <span class="nx">fe</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">as</span> <span class="nx">Developer</span><span class="p">;</span>
+<span class="nx">fe</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">josh</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">fe</span><span class="p">.</span><span class="nx">skill</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">TypeScript</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">fe</span><span class="p">.</span><span class="nx">drink</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Beer</span><span class="dl">'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="하이브리드-타입">하이브리드 타입</h2>
+
+<p>자바스크립트의 유연하고 동적인 타입 특성에 따라 인터페이스 역시 여러 가지 타입을 조합하여 만들 수 있다.<br />
+예를 들어, 다음과 같이 함수 타입이면서 객체 타입을 정의할 수 있는 인터페이스가 있다.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="p">(</span><span class="nx">beer</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nl">brand</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+  <span class="nx">brew</span><span class="p">():</span> <span class="k">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">myBeer</span><span class="p">():</span> <span class="nx">CraftBeer</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">my</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">beer</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{}</span> <span class="k">as</span> <span class="nx">CraftBeer</span><span class="p">;</span>
+  <span class="nx">my</span><span class="p">.</span><span class="nx">brand</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Beer Kitchen</span><span class="dl">'</span><span class="p">;</span>
+  <span class="nx">my</span><span class="p">.</span><span class="nx">brew</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{};</span>
+  <span class="k">return</span> <span class="nx">my</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">brewBeer</span> <span class="o">=</span> <span class="nx">myBeer</span><span class="p">();</span>
+<span class="nx">brewedBeer</span><span class="p">(</span><span class="dl">'</span><span class="s1">My First Beer</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">brewedBeer</span><span class="p">.</span><span class="nx">brand</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Pangyo Craft</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">brewedBeer</span><span class="p">.</span><span class="nx">brew</span><span class="p">();</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a href="https://joshua1988.github.io/ts/guide/interfaces.html">출처 : 타입스크립트 핸드북 - 인터페이스</a></p>]]></content><author><name>Park jiho</name></author><category term="typescript" /><category term="typescript" /><category term="interface" /><summary type="html"><![CDATA[인터페이스는 상호 간에 정의한 약속 혹은 규칙을 의미한다. 타입 스크립트에서의 인터페이스는 보통 다음과 같은 범주에 대해 약속을 정의할 수 있다.]]></summary></entry><entry><title type="html">클로저(Closure)</title><link href="http://localhost:4000/blog/javascript/closure/" rel="alternate" type="text/html" title="클로저(Closure)" /><published>2022-02-09T00:00:00+09:00</published><updated>2022-02-09T00:00:00+09:00</updated><id>http://localhost:4000/blog/javascript/closure</id><content type="html" xml:base="http://localhost:4000/blog/javascript/closure/"><![CDATA[<h2 id="클로저란">클로저란?</h2>
+
+<blockquote>
+  <p>📌 MDN<br />
+클로저는 독립적인 (자유) 변수를 가리키는 함수이다. 또는, 클로저 안에 정의된 함수는 만들어진 환경을 기억한다.</p>
+</blockquote>
+
+<p>흔히 함수 내에서 함수를 정의하고 사용하면 클로저라고 한다.<br />
+하지만 대개는 정의한 함수를 리턴하고 사용은 바깥에서 하게 된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getClosure</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">variable 1</span><span class="dl">'</span><span class="p">;</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">text</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">closure</span> <span class="o">=</span> <span class="nx">getClosure</span><span class="p">();</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">closure</span><span class="p">());</span> <span class="c1">// 'variable 1'</span>
+</code></pre></div></div>
+
+<p>위에서 정의한 getClosure()는 함수를 반환하고, 반환된 함수는 getClosure() 내부에서 선언된 변수를 참조하고 있다. 또한 이렇게 참조된 변수는 함수 실행이 끝났다고 해서 사라지지 않았고, 여전히 제대로 된 값을 반환하는 것을 알 수 있다.</p>
+
+<p>여기서 반환된 함수가 클로저인데 MDN에서 정의된 내용에서도 말했듯 환경을 기억하고 있는 것처럼 보인다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">hello, </span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">sayHelloTo</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="nx">base</span> <span class="o">+</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">he11o1</span> <span class="o">=</span> <span class="nx">sayHelloTo</span><span class="p">(</span><span class="dl">'</span><span class="s1">user1</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello2</span> <span class="o">=</span> <span class="nx">sayHelloTo</span><span class="p">(</span><span class="dl">'</span><span class="s1">user2</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello3</span> <span class="o">=</span> <span class="nx">sayHelloTo</span><span class="p">(</span><span class="dl">'</span><span class="s1">user3</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">hello1</span><span class="p">();</span> <span class="c1">// 'hello, user1'</span>
+<span class="nx">hello2</span><span class="p">();</span> <span class="c1">// 'hello, user2'</span>
+<span class="nx">hello3</span><span class="p">();</span> <span class="c1">// 'hello, user3'</span>
+</code></pre></div></div>
+
+<p>출력된 결과를 보면 text 변수가 동적으로 변화하고 있는 것처럼 보이지만 실제로는 text라는 변수 자체가 여러번 생성된 것이다. 즉, hello()와 hello2(), hello3()은 서로 다른 환경을 가지고 있다.</p>
+
+<hr />
+
+<h2 id="클로저를-통한-은닉화">클로저를 통한 은닉화</h2>
+
+<p>일반적으로 자바스크립트에서 객체지향 프로그래밍을 말한다면, 프로토타입을 통해 객체를 다루는 것을 말한다.</p>
+
+<p>프로토타입을 통한 객체를 만들 때 주요한 문제 중 하나는 Private variables에 대한 접근 권한 문제이다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Hello</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">_name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Hello</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">say</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, </span><span class="dl">'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">_name</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">hello1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user1</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user2</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello3</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user3</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">hello1</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span> <span class="c1">// 'Hello, user1'</span>
+<span class="nx">hello2</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span> <span class="c1">// 'Hello, user2'</span>
+<span class="nx">hello3</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span> <span class="c1">// 'Hello, user3'</span>
+<span class="nx">hello1</span><span class="p">.</span><span class="nx">_name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">anonymous</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">hello1</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span> <span class="c1">// 'Hello, anonymous'</span>
+</code></pre></div></div>
+
+<p>위에서 Hello()로 생성된 객체들은 모두 _name이라는 변수를 가지게 된다. 변수명 앞에 underscroe를 포함했기 때문에 일반적인 자바스크립트 네이밍 컨벤션을 생각해 봤을 때 이 변수는 Private variable으로 쓰고 싶다는 의도를 알 수 있다.<br />
+하지만 실제로는 여전히 외부에서도 쉽게 접근 가능한 변수일 뿐이다.</p>
+
+<p>이 경우에 클로저를 사용하여 외부에서 변수에 접근하는 것을 제한할 수 있다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">hello</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">_name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">_name</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">hello1</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user1</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello2</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user2</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello3</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user3</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">hello1</span><span class="p">();</span> <span class="c1">// 'Hello, user1'</span>
+<span class="nx">hello2</span><span class="p">();</span> <span class="c1">// 'Hello, user2'</span>
+<span class="nx">hello3</span><span class="p">();</span> <span class="c1">// 'Hello, user3'</span>
+</code></pre></div></div>
+
+<p>특별히 인터페이스를 제공하는 것이 아니라면, 여기서는 외부에서 _name에 접근할 방법이 전혀 없다.<br />
+이렇게 은닉화도 생각보다 쉽게 해결할 수 있다.</p>
+
+<hr />
+
+<h2 id="반복문-클로저">반복문 클로저</h2>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">i</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+  <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>0-9까지의 정수를 출력하는 코드이지만 실제로 돌려보면 엉뚱하게도 10만 열 번 출력되는 걸 볼 수 있다.</p>
+
+<p>먼저 setTimeout()에 인자로 넘긴 익명함수는 모두 0.1초 뒤에 호출될 것이다.<br />
+그 0.1초 동안에 이미 반복문이 모두 순회되면서 i값은 이미 10이 된 상태이고, 그 때 익명함수가 호출되면서 이미 10이 되어버린 i를 참조하는 것이다.</p>
+
+<p>이 경우에도 클로저를 사용하면 원하는 대로 동작하도록 만들 수 있다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">i</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">j</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">j</span><span class="p">);</span>
+    <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+  <span class="p">})(</span><span class="nx">i</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>중간에 즉시 실행 함수를 덧붙여 setTimeout()에 걸린 익명함수를 클로저로 만든다. 앞서 말한대로 클로저는 만들어진 환경을 기억한다. 이 코드에서 i는 IIFE내에 j라는 형태로 주입되고, 클로저에 의해 각기 다른 환경속에 포함된다.<br />
+반복문은 10회 반복되므로 10개의 환경이 생길 것이고, 10개의 서로 다른 환경에 10개의 서로 다른 j가 생긴다.</p>
+
+<p>만약 IIFE 매개변수로 i를 넘기지 않고 그냥 직접 참조하면 어떻게 될까?</p>
+
+<p>위의 예제에서는 IIFE를 통해서 클로자마다 환경이 생기지만 인자로 i를 넘기지 않는다면 클로저가 참조하는 IIFE의 함수 스코프에서도 i값이 없으므로 생성 당시의 외부 스코프인 글로벌을 탐색하게 되고 결국 모두 같인 i를 참조하게 된다.</p>
+
+<p>반면에, 인자로 i를 넘기게 되면 IIFE로 만든 10개의 스코프에 모두 i라는 변수가 다른 값으로 생기므로 정상적으로 동작할 수 있는 것이다.</p>
+
+<hr />
+
+<h2 id="클로저의-성능">클로저의 성능</h2>
+
+<p>클로저는 각자의 환경을 가진다. 이환경을 기억하기 위해서는 당연히 메모리가 소모될 것이다.<br />
+클로저를 통해 내부 변수를 참조하는 동안에는 내부 변수가 차지하는 메모리를 가비지컬렉터가 회수하지 않는다.<br />
+따라서 클로저 사용이 끝나면 참조를 제거하는 것이 좋다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">hello</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">_name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">_name</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">hello1</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user1</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello2</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user2</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello3</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user3</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">hello1</span><span class="p">();</span> <span class="c1">// "Hello, user1"</span>
+<span class="nx">hello2</span><span class="p">();</span> <span class="c1">// "Hello, user2"</span>
+<span class="nx">hello3</span><span class="p">();</span> <span class="c1">// "Hello, user3"</span>
+
+<span class="c1">// 여기서 메모리를 release 시키기 위해 클로저의 참조를 제거해야 한다.</span>
+<span class="nx">hello1</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="nx">hello2</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="nx">hello3</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>이처럼 메모리 관리에 있어서 약점이 있지만 추가로 스코프 체인을 검색하는 시간과 새로운 스코프를 생성하는 데 드는 비용도 감안하지 않을 수 없다.</p>
+
+<hr />
+
+<p><a href="https://hyunseob.github.io/2016/08/30/javascript-closure/">출처 : JavaScript 클로저(Closure)</a></p>]]></content><author><name>Park jiho</name></author><category term="javascript" /><category term="javascript" /><category term="closure" /><summary type="html"><![CDATA[클로저란?]]></summary></entry><entry><title type="html">호이스팅(Hoisting)</title><link href="http://localhost:4000/blog/javascript/hoisting/" rel="alternate" type="text/html" title="호이스팅(Hoisting)" /><published>2022-02-08T00:00:00+09:00</published><updated>2022-02-08T00:00:00+09:00</updated><id>http://localhost:4000/blog/javascript/hoisting</id><content type="html" xml:base="http://localhost:4000/blog/javascript/hoisting/"><![CDATA[<h2 id="호이스팅hoisting의-개념">호이스팅(Hoisting)의 개념</h2>
+
+<p>함수 안에 있는 선언들을 모두 끌어올려서 해당 함수 유효 범위의 최상단에 선언하는 것</p>
+
+<h2 id="호이스팅이란">호이스팅이란</h2>
+
+<p>자바스크립트 함수는 실행되기 전에 함수 안에 필요한 변수값들을 모두 모아서 <strong>유효 범위의 최상단에 선언</strong>한다.</p>
+
+<ul>
+  <li>자바스크립트 파서가 함수 실행 전 해당 함수를 한 번 훑는다.</li>
+  <li>함수 안에 존재하는 변수 / 함수선언에 대한 정보를 기억하고 있다가 실행시킨다.</li>
+  <li>유효 범위 : 함수 블록 {} 안에서 유효</li>
+</ul>
+
+<p>즉, 함수 내에서 아래쪽에 존재하는 내용 중 필요한 값들을 끌어올리는 것이다.</p>
+
+<ul>
+  <li>실제로 코드가 끌어올려지는 것은 아니며, 자바스크립트 파서가 내부적으로 끌어올려서 처리하는 것이다.</li>
+  <li>실제 메모리에서는 변화가 없다.</li>
+</ul>
+
+<hr />
+
+<h2 id="호이스팅의-대상">호이스팅의 대상</h2>
+
+<p>var 변수 선언과 함수선언문에서만 호이스팅이 일어난다.</p>
+
+<ul>
+  <li>var 변수 / 함수의 선언만 위로 끌어 올려지며, 할당은 끌어 올려지지 않는다.</li>
+  <li>let / const 변수 선언과 함수 표현식에서는 호이스팅이 발생하지 않는다.</li>
+</ul>
+
+<h3 id="변수-호이스팅-예시-var-vs-let--const">변수 호이스팅 예시 (var vs let / const)</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">JEEE</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// var 변수</span>
+<span class="kd">let</span> <span class="nx">myName2</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Jeee</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// let 변수</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// JS Parser 내부의 호이스팅(Hoisting)의 결과 - 위와 동일</span>
+<span class="kd">var</span> <span class="nx">myName</span><span class="p">;</span> <span class="c1">// [Hoisting] "선언"</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">JEEE</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// "할당"</span>
+<span class="kd">let</span> <span class="nx">myName2</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Jeee</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// [Hoisting] 발생 x</span>
+</code></pre></div></div>
+
+<h3 id="함수-호이스팅-예시-선언문-vs-표현식">함수 호이스팅 예시 (선언문 vs 표현식)</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">foo</span><span class="p">();</span>
+<span class="nx">foo2</span><span class="p">();</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// 함수선언문</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">foo2</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// 함수표현식</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello2</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// JS Parser 내부의 호이스팅(Hoisting) 결과 - 위와 동일</span>
+<span class="kd">var</span> <span class="nx">foo2</span><span class="p">;</span> <span class="c1">// [Hoisting] 함수표현식의 변수값 "선언"</span>
+
+<span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// [Hoisting] 함수선언문</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">foo</span><span class="p">();</span>
+<span class="nx">foo2</span><span class="p">();</span> <span class="c1">// Error</span>
+
+<span class="nx">foo2</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">hello2</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>호이스팅은 함수선언문과 함수표현식에서 서로 다르게 동작하기 때문에 주의해야 한다.</p>
+
+<ul>
+  <li>변수에 할당된 함수표현식은 끌어 올려지지 않기 때문에, 이때는 변수의 스코프 규칙을 그대로 따른다.</li>
+</ul>
+
+<hr />
+
+<h2 id="함수선언문과-함수표현식에서의-호이스팅">함수선언문과 함수표현식에서의 호이스팅</h2>
+
+<p><a href="https://gmlwjd9405.github.io/2019/04/20/function-declaration-vs-function-expression.html">함수선언문과 함수표현식의 차이</a></p>
+
+<h3 id="함수선언문에서의-호이스팅">함수선언문에서의 호이스팅</h3>
+
+<p>함수선언문은 코드를 구현한 위치와 관계없이 자바스크립트의 특징인 호이스팅에 따라 브라우저가 자바스크립트를 해석할 때 맨 위로 끌어 올려진다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 정상 출력</span>
+<span class="kd">function</span> <span class="nx">printName</span><span class="p">(</span><span class="nx">firstname</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">inner</span><span class="p">();</span> <span class="c1">// "선언 및 할당"</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">inner</span><span class="p">);</span> <span class="c1">// "function"</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">name is</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">result</span><span class="p">);</span> <span class="c1">// "name is inner value"</span>
+
+  <span class="kd">function</span> <span class="nx">inner</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="dl">'</span><span class="s1">inner value</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">printName</span><span class="p">();</span> <span class="c1">// 함수 호출</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// JS Parser 내부의 호이스팅의 결과</span>
+<span class="c1">// 정상 출력</span>
+<span class="kd">function</span> <span class="nx">printName</span><span class="p">(</span><span class="nx">firstName</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span> <span class="c1">// [Hoisting] var 변수 선언</span>
+
+  <span class="kd">function</span> <span class="nx">inner</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// [Hoisting]  함수선언문</span>
+    <span class="k">return</span> <span class="dl">'</span><span class="s1">inner value</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nx">result</span> <span class="o">=</span> <span class="nx">inner</span><span class="p">();</span> <span class="c1">// 할당</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">inner</span><span class="p">);</span> <span class="c1">// function</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">name is</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">result</span><span class="p">);</span> <span class="c1">// "name is inner value"</span>
+<span class="p">}</span>
+
+<span class="nx">printName</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>즉, 해당 예제에서는 함수선언문이 아래에 있어도 printName 함수 내에서 inner를 function으로 인식하기 때문에 오류가 발생하지 않는다.</p>
+
+<h3 id="함수표현식에서의-호이스팅">함수표현식에서의 호이스팅</h3>
+
+<p>함수표현식은 함수선언문과 달리 선언과 호출 순서에 따라서 정상적으로 함수가 실행되지 않을 수 있다.</p>
+
+<ul>
+  <li>함수표현식에서는 선언과 할당의 분리가 발생한다.</li>
+</ul>
+
+<p><strong>#1. 함수표현식의 선언이 호출보다 위에 있는 경우</strong></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 정상 출력</span>
+<span class="kd">function</span> <span class="nx">printName</span><span class="p">(</span><span class="nx">firstName</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">inner</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 함수 선언</span>
+    <span class="k">return</span> <span class="dl">'</span><span class="s1">inner value</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">inner</span><span class="p">();</span> <span class="c1">// 함수 호출</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">name is</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">result</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">printName</span><span class="p">();</span> <span class="c1">// "name is inner value"</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 정상 출력</span>
+<span class="c1">// JS Parser 내부의 호이스팅 결과</span>
+<span class="kd">function</span> <span class="nx">printName</span><span class="p">(</span><span class="nx">firstName</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">inner</span><span class="p">;</span> <span class="c1">// [Hoisting] 함수표현식의 변수값 선언</span>
+  <span class="kd">var</span> <span class="nx">resultl</span><span class="p">;</span> <span class="c1">// [Hoisting] var 변수값 선언</span>
+
+  <span class="nx">inner</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 함수표현식 할당</span>
+    <span class="k">return</span> <span class="dl">'</span><span class="s1">inner value</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="nx">result</span> <span class="o">=</span> <span class="nx">inner</span><span class="p">();</span> <span class="c1">// 함수 호출</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">name is</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">result</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">printName</span><span class="p">();</span> <span class="c1">// "name is inner value"</span>
+</code></pre></div></div>
+
+<p><strong>#2. 함수표현식의 선언이 호출보다 아래에 있는 경우 (var 변수에 할당)</strong></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// TypeError</span>
+<span class="kd">function</span> <span class="nx">printName</span><span class="p">(</span><span class="nx">firstName</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">inner</span><span class="p">);</span> <span class="c1">// "undefined" - 선언은 되어 있지만 값이 할당되지 않은 상태</span>
+
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">inner</span><span class="p">();</span> <span class="c1">// Error</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">name is</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">result</span><span class="p">);</span>
+
+  <span class="kd">var</span> <span class="nx">inner</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="dl">'</span><span class="s1">inner value</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="nx">printName</span><span class="p">();</span> <span class="c1">// TypeError: inner is not a function</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// TypeError</span>
+<span class="c1">// JS Parser 내부의 호이스팅 결과</span>
+<span class="kd">function</span> <span class="nx">printName</span><span class="p">(</span><span class="nx">firstName</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">inner</span><span class="p">;</span> <span class="c1">// [Hoisting] 함수표현식의 변수값 선언</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">inner</span><span class="p">);</span> <span class="c1">// "undefined"</span>
+
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">inner</span><span class="p">();</span> <span class="c1">// Error</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">name is</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">result</span><span class="p">);</span>
+
+  <span class="nx">inner</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="dl">'</span><span class="s1">inner value</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="nx">printName</span><span class="p">();</span> <span class="c1">// TypeError: inner is not a function</span>
+</code></pre></div></div>
+
+<p>printName에서 “inner is not defined” 이라고 오류가 나오지 않고, “inner is not a function” 이라고 TypeError가 나오는 이유는 무엇일까?<br />
+바로 printName이 실행되는 순간 호이스팅에 의해 inner는 “undefined”로 지정이 되기 때문이다.<br />
+inner가 undefined라는 것은 아직 함수로 인식되지 않고 있음을 의미한다.</p>
+
+<p><strong>#3. 함수표현식의 선언이 호출보다 아래에 있는 경우 (let / const 변수)</strong></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//ReferenceError</span>
+<span class="kd">function</span> <span class="nx">printName</span><span class="p">(</span><span class="nx">firstName</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">inner</span><span class="p">);</span> <span class="c1">// Error</span>
+
+  <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">inner</span><span class="p">();</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">name is</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">result</span><span class="p">);</span>
+
+  <span class="kd">let</span> <span class="nx">inner</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="dl">'</span><span class="s1">inner value</span><span class="dl">'</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="nx">printName</span><span class="p">();</span> <span class="c1">// ReferenceError : inner is not defined</span>
+</code></pre></div></div>
+
+<p>let / const의 경우, 호이스팅이 일어나지 않기 때문에 위의 예시 그대로 이해하면 된다.<br />
+console.log(inner); 에서 inner에 대한 선언이 되어있지 않기 때문에 이때는 “inner is not defined” 오류가 발생한다.</p>
+
+<p>함수표현식보다 함수선언문을 더 자주 사용하지만, 어떤 코딩컨벤션에는 함수표현식을 권장하기도 한다.</p>
+
+<ul>
+  <li>어떤 컨벤션을 갖던지, 한가지만 정해서 사용하는 것이 좋다.</li>
+</ul>
+
+<hr />
+
+<h2 id="호이스팅-우선순위">호이스팅 우선순위</h2>
+
+<h3 id="같은-이름의-var-변수-선언과-함수-선언에서의-호이스팅">같은 이름의 var 변수 선언과 함수 선언에서의 호이스팅</h3>
+
+<p>변수 선언이 함수 선언보다 위로 끌어 올려진다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">hi</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">myName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Hello</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">fuction</span> <span class="nx">yourName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">everyone</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">yourName</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">bye</span><span class="dl">"</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">myName</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">yourName</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// JS Parser 내부의 호이스팅 결과</span>
+
+<span class="c1">// 1. [Hoisting] 변수값 선언</span>
+<span class="kd">var</span> <span class="nx">myName</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">yourName</span><span class="p">;</span>
+
+<span class="c1">// 2. [Hoisting] 함수선언문</span>
+<span class="kd">function</span> <span class="nx">myName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">yourName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">everyone</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 3. 변수값 할당</span>
+<span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">hi</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">yourName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">bye</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">myName</span><span class="p">);</span> <span class="c1">// string</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">yourName</span><span class="p">);</span> <span class="c1">// string</span>
+</code></pre></div></div>
+
+<p><strong>값이 할당되어 있지 않은 변수와 값이 할당되어 있는 변수에서의 호이스팅</strong></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">myName</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Jeee</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// 값 할당</span>
+<span class="kd">var</span> <span class="nx">yourName</span><span class="p">;</span> <span class="c1">// 값 할당 x</span>
+
+<span class="kd">function</span> <span class="nx">myName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">myName function</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">yourName</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">yourName function</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">myName</span><span class="p">);</span> <span class="c1">// string</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">yourName</span><span class="p">);</span> <span class="c1">// function</span>
+</code></pre></div></div>
+
+<p>값이 할당되어 있지 않은 변수의 경우, 함수선언문이 변수를 덮어쓴다.<br />
+값이 할당되어 있는 변수의 경우, 변수가 함수선언문을 덮어쓴다.</p>
+
+<blockquote>
+  <p>📌 호이스팅 주의 사항</p>
+
+  <p>코드의 가독성과 유지보수를 위해 호이스팅이 일어나지 않도록 한다.</p>
+
+  <ul>
+    <li>함수와 변수를 가급적 코드 상단부에서 선언하면, 호이스팅으로 인한 스코프 꼬임 현상을 방지할 수 있다.</li>
+    <li>let / const를 사용한다.</li>
+  </ul>
+
+  <p>var를 쓰면 혼란스럽고 쓸모없는 코드가 생길 수 있다. 그럼 왜 var와 호이스팅을 이해해야 할까?</p>
+
+  <ul>
+    <li>ES6를 어디에서든 쓸 수 있으려면 아직 시간이 더 필요하므로 ES5로 트랜스컴파일을 해야한다.</li>
+    <li>따라서 아직까지는 var가 어떻게 동작하는지 이해하고 있어야 한다.</li>
+  </ul>
+</blockquote>
+
+<hr />
+
+<p><a href="https://gmlwjd9405.github.io/2019/04/22/javascript-hoisting.html">출처 : [JavaScript] 호이스팅(Hoisting)이란</a></p>]]></content><author><name>Park jiho</name></author><category term="javascript" /><category term="javascript" /><category term="hoisting" /><summary type="html"><![CDATA[호이스팅(Hoisting)의 개념]]></summary></entry><entry><title type="html">브라우저 렌더링 원리</title><link href="http://localhost:4000/blog/web/rendering/" rel="alternate" type="text/html" title="브라우저 렌더링 원리" /><published>2022-02-07T00:00:00+09:00</published><updated>2022-02-07T00:00:00+09:00</updated><id>http://localhost:4000/blog/web/rendering</id><content type="html" xml:base="http://localhost:4000/blog/web/rendering/"><![CDATA[<h2 id="렌더링이란">렌더링이란?</h2>
+
+<p>HTML, CSS, JavaScript 등 개발자가 작성한 문서를 브러우저에 출력하는 과정</p>
+
+<hr />
+
+<h2 id="브라우저-렌더링-과정">브라우저 렌더링 과정</h2>
+
+<ol>
+  <li>
+    <p>불러오기(Loading)</p>
+
+    <p>HTTP 모듈 또는 파일 시스템으로 전달 받은 리소스 스트림을 읽는 과정, 로더가 이 역할을 맡고 있다.<br />
+로더는 단순히 읽기만 하는 것이 아니라, 이미 데이터를 읽었는지 확인하고, 팝업창을 열지 말지, 파일을 다운로드 받을지를 결정한다.</p>
+  </li>
+  <li>
+    <p>다운받은 HTML, CSS를 Object Model로 만든다</p>
+
+    <p>HTML 파일은 HTML 파서에 의해 파싱을 거쳐 DOM트리로 변환된다.
+<img src="https://blog.kakaocdn.net/dn/Kx2lI/btrp654QRR5/FbvsaqCpJKGxhTFipOIcB1/img.png" alt="DOM트리" title="DOM트리" /></p>
+
+    <p>CSS 파일은 CSS 파서에 의해 파싱되어 CSSOM 트리로 변환된다.
+<img src="https://blog.kakaocdn.net/dn/nggWG/btrqps4lqLQ/tnIzis3RE986DbmJ11PQUk/img.png" alt="CSSOM트리" title="CSSOM트리" /></p>
+  </li>
+  <li>
+    <p>DOM과 CSSOM을 이용하여 Render Tree를 생성한다.</p>
+
+    <p><img src="https://blog.kakaocdn.net/dn/ujKPZ/btrqdUu7JgP/bwwb7TRqOFQ3yyiCZpolL0/img.png" alt="Render Tree" title="Render 트리" /></p>
+
+    <blockquote>
+      <p>📌 Render Tree에는 실제 화면에 표현되는 노드들로만 구성된다.</p>
+
+      <p>display : none 속성은 어떤 공간도 차지하지 않기 때문에 Render Tree에서 제외된다.
+visibility : invisible 속성은 공간은 차지하고 요소가 보이지 않게만 하기 때문에 Render Tree에 포함된다.</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>Layout</p>
+
+    <p>Render Tree를 토대로 그려질 각 노드들의 정확한 위치와 크기를 계산한다.
+브라우저 화면의 어떤 위치에 어떤 크기로 출력될 지 계산하는 단계라고 할 수 있다.</p>
+
+    <blockquote>
+      <p>📌 Viewport</p>
+
+      <p>그래픽이 표시되는 브라우저의 영역, 크기
+뷰포트는 모바일의 경우 디스플레이의 크기, PC의 경우 브라우저 창의 크기에 따라 달라진다.</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>Paint</p>
+
+    <p>Layout 계산이 완료되면 Render Tree의 각 노드를 화면 상의 실제 픽셀로 변환한다.</p>
+  </li>
+</ol>
+
+<ul>
+  <li>
+    <p>Script 태그 처리</p>
+
+    <p>HTML 파서가 Script 태그를 만나면 자바스크립트 코드를 실행하기 위해 DOM 생성 프로세스를 중지하고 자바스크립트 엔진으로 제어 권한을 넘긴다.</p>
+
+    <p>제어 권한을 넘겨받은 자바스크립트 엔진은 script 태그 내의 자바스크립트 코드 혹은 script의 src attribute에 정의된 js 파일을 로드하고 파싱, 기계어로 컴파일하여 실행한다.</p>
+
+    <p>자바스크립트 실행이 완료되면 다시 HTML 파서로 권한을 넘겨서 중지했던 시점부터 다시 DOM 생성을 재개한다</p>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="렌더링-과정-요약">렌더링 과정 요약</h2>
+
+<blockquote>
+  <p>주소창에 URL을 입력한다.<br />
+해당 URL 서버로 찾아간다.<br />
+DNS가 연결해 줄 곳을 찾는다.<br />
+서버에서 HTML 파일을 클라이언트로 보낸다.<br />
+HTML 파일 파싱 및 DOM Tree 생성<br />
+link 태그를 만나 css 파싱 및 CSSOM 트리 생성<br />
+DOM, CSSOM을 합친 Render Tree 생성<br />
+JavaScript를 만나면, HTML 파서가 JS 코드를 실행하기 위해 파싱을 중단한다.<br />
+JS 엔진 실행 및 JS 코드 파싱</p>
+</blockquote>
+
+<hr />
+
+<p><a href="https://velog.io/@st2702/%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80%EC%9D%98-%EB%A0%8C%EB%8D%94%EB%A7%81-%EA%B3%BC%EC%A0%95">출처: 브라우저의 렌더링 과정</a></p>]]></content><author><name>Park jiho</name></author><category term="web" /><category term="web" /><category term="rendering" /><summary type="html"><![CDATA[렌더링이란?]]></summary></entry></feed>

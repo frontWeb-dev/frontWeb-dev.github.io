@@ -1,0 +1,55 @@
+I"h
+<div class="list__item">
+  <h2 class="archive__item-title"><a href="/blog/typescript/enum/">이넘(Enums)</a></h2>
+  <p class="page__meta">
+    2022-02-15 <a href="/blog/typescript/enum/#disqus_thread">Comments</a>
+  </p>
+  
+    <p class="archive__item-excerpt">
+      이넘은 특정 값들의 집합을 의미하는 자료형이다. 예를 들면 아래와 같은 목록이 이넘이 될 수 있다.
+
+    </p>
+  
+</div>
+
+<div class="list__item">
+  <h2 class="archive__item-title"><a href="/blog/typescript/interface/">인터페이스</a></h2>
+  <p class="page__meta">
+    2022-02-09 <a href="/blog/typescript/interface/#disqus_thread">Comments</a>
+  </p>
+  
+    <p class="archive__item-excerpt">
+      인터페이스는 상호 간에 정의한 약속 혹은 규칙을 의미한다. 타입 스크립트에서의 인터페이스는 보통 다음과 같은 범주에 대해 약속을 정의할 수 있다.
+
+    </p>
+  
+</div>
+
+<div class="list__item">
+  <h2 class="archive__item-title"><a href="/blog/typescript/functions/">타입스크립트에서의 함수</a></h2>
+  <p class="page__meta">
+    2022-02-05 <a href="/blog/typescript/functions/#disqus_thread">Comments</a>
+  </p>
+  
+    <p class="archive__item-excerpt">
+      웹 애플리케이션을 구현할 때 자주 사용되는 함수는 타입스크립트로 크게 다음 3가지 타입을 정의할 수 있다.
+
+    </p>
+  
+</div>
+
+<div class="list__item">
+  <h2 class="archive__item-title"><a href="/blog/typescript/basic-type/">타입스크립트 기본 타입</a></h2>
+  <p class="page__meta">
+    2022-02-04 <a href="/blog/typescript/basic-type/#disqus_thread">Comments</a>
+  </p>
+  
+    <p class="archive__item-excerpt">
+      타입스크립트로 변수나 함수와 같은 자바스크립트 코드에 타입을 정의할 수 있다.
+타입스크립트의 기본 타입에는 크게 12가지가 있다.
+
+    </p>
+  
+</div>
+
+:ET

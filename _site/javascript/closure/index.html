@@ -1,0 +1,774 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="ko" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>클로저(Closure) - Heimish_dev</title>
+<meta name="description" content="클로저란?">
+
+
+  <meta name="author" content="Park jiho">
+  
+  <meta property="article:author" content="Park jiho">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="Heimish_dev">
+<meta property="og:title" content="클로저(Closure)">
+<meta property="og:url" content="http://localhost:4000/blog/javascript/closure/">
+
+
+  <meta property="og:description" content="클로저란?">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2022-02-09T00:00:00+09:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/blog/javascript/closure/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Park jiho",
+      "url": "http://localhost:4000/blog/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="Heimish_dev Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/blog/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/blog/">
+          Heimish_dev
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/blog/web/">Web</a>
+            </li><li class="masthead__menu-item">
+              <a href="/blog/html/">HTML</a>
+            </li><li class="masthead__menu-item">
+              <a href="/blog/css/">CSS</a>
+            </li><li class="masthead__menu-item">
+              <a href="/blog/javascript/">JavaScript</a>
+            </li><li class="masthead__menu-item">
+              <a href="/blog/typescript/">TypeScript</a>
+            </li><li class="masthead__menu-item">
+              <a href="/blog/react/">React</a>
+            </li><li class="masthead__menu-item">
+              <a href="/blog/vue/">Vue</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">토글 메뉴</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/blog/" itemprop="url">Park jiho</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <p>매일매일 공부하는 습관</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">팔로우</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name" class="p-locality">Somewhere</span>
+        </li>
+      
+
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+  
+  </div>
+
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="클로저(Closure)">
+    <meta itemprop="description" content="클로저란?">
+    <meta itemprop="datePublished" content="2022-02-09T00:00:00+09:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/blog/javascript/closure/" class="u-url" itemprop="url">클로저(Closure)
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          3 분 소요
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h2 id="클로저란">클로저란?</h2>
+
+<blockquote>
+  <p>📌 MDN<br />
+클로저는 독립적인 (자유) 변수를 가리키는 함수이다. 또는, 클로저 안에 정의된 함수는 만들어진 환경을 기억한다.</p>
+</blockquote>
+
+<p>흔히 함수 내에서 함수를 정의하고 사용하면 클로저라고 한다.<br />
+하지만 대개는 정의한 함수를 리턴하고 사용은 바깥에서 하게 된다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getClosure</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">variable 1</span><span class="dl">'</span><span class="p">;</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">text</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">closure</span> <span class="o">=</span> <span class="nx">getClosure</span><span class="p">();</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">closure</span><span class="p">());</span> <span class="c1">// 'variable 1'</span>
+</code></pre></div></div>
+
+<p>위에서 정의한 getClosure()는 함수를 반환하고, 반환된 함수는 getClosure() 내부에서 선언된 변수를 참조하고 있다. 또한 이렇게 참조된 변수는 함수 실행이 끝났다고 해서 사라지지 않았고, 여전히 제대로 된 값을 반환하는 것을 알 수 있다.</p>
+
+<p>여기서 반환된 함수가 클로저인데 MDN에서 정의된 내용에서도 말했듯 환경을 기억하고 있는 것처럼 보인다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">hello, </span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">sayHelloTo</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="nx">base</span> <span class="o">+</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">he11o1</span> <span class="o">=</span> <span class="nx">sayHelloTo</span><span class="p">(</span><span class="dl">'</span><span class="s1">user1</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello2</span> <span class="o">=</span> <span class="nx">sayHelloTo</span><span class="p">(</span><span class="dl">'</span><span class="s1">user2</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello3</span> <span class="o">=</span> <span class="nx">sayHelloTo</span><span class="p">(</span><span class="dl">'</span><span class="s1">user3</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">hello1</span><span class="p">();</span> <span class="c1">// 'hello, user1'</span>
+<span class="nx">hello2</span><span class="p">();</span> <span class="c1">// 'hello, user2'</span>
+<span class="nx">hello3</span><span class="p">();</span> <span class="c1">// 'hello, user3'</span>
+</code></pre></div></div>
+
+<p>출력된 결과를 보면 text 변수가 동적으로 변화하고 있는 것처럼 보이지만 실제로는 text라는 변수 자체가 여러번 생성된 것이다. 즉, hello()와 hello2(), hello3()은 서로 다른 환경을 가지고 있다.</p>
+
+<hr />
+
+<h2 id="클로저를-통한-은닉화">클로저를 통한 은닉화</h2>
+
+<p>일반적으로 자바스크립트에서 객체지향 프로그래밍을 말한다면, 프로토타입을 통해 객체를 다루는 것을 말한다.</p>
+
+<p>프로토타입을 통한 객체를 만들 때 주요한 문제 중 하나는 Private variables에 대한 접근 권한 문제이다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Hello</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">_name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">Hello</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">say</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, </span><span class="dl">'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">_name</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">hello1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user1</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user2</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello3</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user3</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">hello1</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span> <span class="c1">// 'Hello, user1'</span>
+<span class="nx">hello2</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span> <span class="c1">// 'Hello, user2'</span>
+<span class="nx">hello3</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span> <span class="c1">// 'Hello, user3'</span>
+<span class="nx">hello1</span><span class="p">.</span><span class="nx">_name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">anonymous</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">hello1</span><span class="p">.</span><span class="nx">say</span><span class="p">();</span> <span class="c1">// 'Hello, anonymous'</span>
+</code></pre></div></div>
+
+<p>위에서 Hello()로 생성된 객체들은 모두 _name이라는 변수를 가지게 된다. 변수명 앞에 underscroe를 포함했기 때문에 일반적인 자바스크립트 네이밍 컨벤션을 생각해 봤을 때 이 변수는 Private variable으로 쓰고 싶다는 의도를 알 수 있다.<br />
+하지만 실제로는 여전히 외부에서도 쉽게 접근 가능한 변수일 뿐이다.</p>
+
+<p>이 경우에 클로저를 사용하여 외부에서 변수에 접근하는 것을 제한할 수 있다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">hello</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">_name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">_name</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">hello1</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user1</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello2</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user2</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello3</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user3</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">hello1</span><span class="p">();</span> <span class="c1">// 'Hello, user1'</span>
+<span class="nx">hello2</span><span class="p">();</span> <span class="c1">// 'Hello, user2'</span>
+<span class="nx">hello3</span><span class="p">();</span> <span class="c1">// 'Hello, user3'</span>
+</code></pre></div></div>
+
+<p>특별히 인터페이스를 제공하는 것이 아니라면, 여기서는 외부에서 _name에 접근할 방법이 전혀 없다.<br />
+이렇게 은닉화도 생각보다 쉽게 해결할 수 있다.</p>
+
+<hr />
+
+<h2 id="반복문-클로저">반복문 클로저</h2>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">i</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+  <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>0-9까지의 정수를 출력하는 코드이지만 실제로 돌려보면 엉뚱하게도 10만 열 번 출력되는 걸 볼 수 있다.</p>
+
+<p>먼저 setTimeout()에 인자로 넘긴 익명함수는 모두 0.1초 뒤에 호출될 것이다.<br />
+그 0.1초 동안에 이미 반복문이 모두 순회되면서 i값은 이미 10이 된 상태이고, 그 때 익명함수가 호출되면서 이미 10이 되어버린 i를 참조하는 것이다.</p>
+
+<p>이 경우에도 클로저를 사용하면 원하는 대로 동작하도록 만들 수 있다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">i</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">j</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">j</span><span class="p">);</span>
+    <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+  <span class="p">})(</span><span class="nx">i</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>중간에 즉시 실행 함수를 덧붙여 setTimeout()에 걸린 익명함수를 클로저로 만든다. 앞서 말한대로 클로저는 만들어진 환경을 기억한다. 이 코드에서 i는 IIFE내에 j라는 형태로 주입되고, 클로저에 의해 각기 다른 환경속에 포함된다.<br />
+반복문은 10회 반복되므로 10개의 환경이 생길 것이고, 10개의 서로 다른 환경에 10개의 서로 다른 j가 생긴다.</p>
+
+<p>만약 IIFE 매개변수로 i를 넘기지 않고 그냥 직접 참조하면 어떻게 될까?</p>
+
+<p>위의 예제에서는 IIFE를 통해서 클로자마다 환경이 생기지만 인자로 i를 넘기지 않는다면 클로저가 참조하는 IIFE의 함수 스코프에서도 i값이 없으므로 생성 당시의 외부 스코프인 글로벌을 탐색하게 되고 결국 모두 같인 i를 참조하게 된다.</p>
+
+<p>반면에, 인자로 i를 넘기게 되면 IIFE로 만든 10개의 스코프에 모두 i라는 변수가 다른 값으로 생기므로 정상적으로 동작할 수 있는 것이다.</p>
+
+<hr />
+
+<h2 id="클로저의-성능">클로저의 성능</h2>
+
+<p>클로저는 각자의 환경을 가진다. 이환경을 기억하기 위해서는 당연히 메모리가 소모될 것이다.<br />
+클로저를 통해 내부 변수를 참조하는 동안에는 내부 변수가 차지하는 메모리를 가비지컬렉터가 회수하지 않는다.<br />
+따라서 클로저 사용이 끝나면 참조를 제거하는 것이 좋다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">hello</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">_name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">_name</span><span class="p">);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">hello1</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user1</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello2</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user2</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">hello3</span> <span class="o">=</span> <span class="nx">hello</span><span class="p">(</span><span class="dl">'</span><span class="s1">user3</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">hello1</span><span class="p">();</span> <span class="c1">// "Hello, user1"</span>
+<span class="nx">hello2</span><span class="p">();</span> <span class="c1">// "Hello, user2"</span>
+<span class="nx">hello3</span><span class="p">();</span> <span class="c1">// "Hello, user3"</span>
+
+<span class="c1">// 여기서 메모리를 release 시키기 위해 클로저의 참조를 제거해야 한다.</span>
+<span class="nx">hello1</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="nx">hello2</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="nx">hello3</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>이처럼 메모리 관리에 있어서 약점이 있지만 추가로 스코프 체인을 검색하는 시간과 새로운 스코프를 생성하는 데 드는 비용도 감안하지 않을 수 없다.</p>
+
+<hr />
+
+<p><a href="https://hyunseob.github.io/2016/08/30/javascript-closure/">출처 : JavaScript 클로저(Closure)</a></p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> 태그: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/blog/tags/#closure" class="page__taxonomy-item p-category" rel="tag">closure</a><span class="sep">, </span>
+    
+      <a href="/blog/tags/#javascript" class="page__taxonomy-item p-category" rel="tag">javascript</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> 카테고리: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/blog/categories/#javascript" class="page__taxonomy-item p-category" rel="tag">javascript</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> 업데이트:</strong> <time class="dt-published" datetime="2022-02-09T00:00:00+09:00">February 9, 2022</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">공유하기</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=%ED%81%B4%EB%A1%9C%EC%A0%80%28Closure%29%20http%3A%2F%2Flocalhost%3A4000%2Fblog%2Fjavascript%2Fclosure%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fblog%2Fjavascript%2Fclosure%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fblog%2Fjavascript%2Fclosure%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="공유하기 LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/blog/javascript/hoisting/" class="pagination--pager" title="호이스팅(Hoisting)
+">이전</a>
+    
+    
+      <a href="/blog/typescript/interface/" class="pagination--pager" title="인터페이스
+">다음</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h2 class="page__related-title">참고</h2>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/blog/javascript/this/" rel="permalink">this 용법
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          9 분 소요
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">자바스크립트의 함수는 호출될 때, 매개변수로 전달되는 인자값 이외에, arguments 객체와 this를 암묵적으로 전달 받는다.
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/blog/css/position/" rel="permalink">Position
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          2 분 소요
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">position 속성은 요소에 사용되는 위치 지정 방법의 유형을 지정한다.
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/blog/typescript/enum/" rel="permalink">이넘(Enums)
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          2 분 소요
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">이넘은 특정 값들의 집합을 의미하는 자료형이다. 예를 들면 아래와 같은 목록이 이넘이 될 수 있다.
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/blog/web/get-and-post/" rel="permalink">GET과 POST
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          2 분 소요
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">GET
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>팔로우:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    
+      <li><a href="/blog/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> 피드</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2022 Park jiho. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/blog/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
