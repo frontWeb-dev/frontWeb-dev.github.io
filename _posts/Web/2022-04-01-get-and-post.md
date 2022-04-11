@@ -1,11 +1,9 @@
 ---
-title: 'GET과 POST'
+title: "GET과 POST"
 categories:
   - web
 tags:
   - web
-  - get
-  - post
 ---
 
 ## GET
