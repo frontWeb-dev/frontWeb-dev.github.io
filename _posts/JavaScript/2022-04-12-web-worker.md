@@ -82,3 +82,5 @@ function stopWorker() {
 Web worker.terminate()를 통해 작업중이던 웹 워커를 중지시킨 뒤 undefined로 메모리에서 해제해준다.
 
 ---
+
+출처 : [Web Worker - 웹에서 멀티 쓰레드 구현하기](https://boxfoxs.tistory.com/294)
