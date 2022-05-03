@@ -117,12 +117,11 @@ sub {
 
 img {
   /* Responsive images (ensure images don't scale beyond their parents) */
-  max-width: 85%; /* part 1: Set a maximum relative to the parent*/
+  display: block;
+  max-width: 75%; /* part 1: Set a maximum relative to the parent*/
   width: auto\9; /* IE7-8 need help adjusting responsive images*/
   height: auto; /* part 2: Scale the height according to the width, otherwise you get stretching*/
   margin-top: 10px;
-
-  vertical-align: middle;
   border: 0;
   -ms-interpolation-mode: bicubic;
 }
