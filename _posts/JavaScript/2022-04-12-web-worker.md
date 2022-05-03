@@ -1,9 +1,9 @@
 ---
 title: "Web Worker"
 categories:
-  - web
+  - javascript
 tags:
-  - web
+  - javascript
 ---
 
 자바스크립트는 인터프리터 언어이며 단일 스레드이다.
