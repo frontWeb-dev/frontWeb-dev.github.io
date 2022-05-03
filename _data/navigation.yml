@@ -12,8 +12,8 @@ main:
     url: /css/
   - title: "JavaScript"
     url: /javascript/
-  # - title: "TypeScript"
-  #   url: /typescript/
+  - title: "TypeScript"
+    url: /typescript/
   # - title: "React"
   #   url: /react/
   # - title: "Vue"
