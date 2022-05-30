@@ -14,7 +14,11 @@ main:
     url: /javascript/
   - title: "TypeScript"
     url: /typescript/
-  # - title: "React"
-  #   url: /react/
+  - title: "React"
+    url: /react/
+  - title: "CodingTest"
+    url: /codingtest/
+  # - title: "How To"
+  #   url: /toyproject/
   # - title: "Vue"
   #   url: /vue/

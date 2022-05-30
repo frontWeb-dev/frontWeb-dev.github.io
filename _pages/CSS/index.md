@@ -2,10 +2,10 @@
 layout: archive
 comments: false
 permalink: /css/
-title: 'CSS'
+title: "CSS"
 
 sidebar:
-  nav: 'css'
+  nav: "css"
 ---
 
 {% for post in site.posts %}
